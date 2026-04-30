@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#1a1a2e" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="English Lab" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <title>English Lab</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+    :root {
+      --bg: #0f0f1a;
+      --surface: #1a1a2e;
+      --surface2: #16213e;
+      --accent: #e94560;
+      --accent2: #0f3460;
+      --teal: #00b4d8;
+      --green: #06d6a0;
+      --amber: #ffd166;
+      --text: #f0f0f0;
+      --text2: #a0a0b8;
+      --border: rgba(255,255,255,0.08);
+      --radius: 16px;
+      --radius-sm: 10px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      max-width: 430px;
+      margin: 0 auto;
+      overflow-x: hidden;
+    }
+
+    /* HEADER */
+    .header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .logo { font-size: 18px; font-weight: 700; letter-spacing: -0.5px; }
+    .logo span { color: var(--accent); }
+    .streak-badge {
+      background: linear-gradient(135deg, #ff6b35, var(--accent));
+      border-radius: 20px;
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    /* NAV */
+    .nav {
+      display: flex;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 57px;
+      z-index: 99;
+    }
+    .nav-btn {
+      flex: 1;
+      padding: 12px 8px;
+      border: none;
+      background: none;
+      color: var(--text2);
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+    }
+    .nav-btn.active { color: var(--teal); border-bottom-color: var(--teal); }
+    .nav-icon { font-size: 18px; }
+
+    /* PAGES */
+    .page { display: none; padding: 20px; }
+    .page.active { display: block; }
+
+    /* STATS ROW */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 14px 10px;
+      text-align: center;
+    }
+    .stat-num { font-size: 26px; font-weight: 700; color: var(--teal); }
+    .stat-label { font-size: 11px; color: var(--text2); margin-top: 3px; }
+
+    /* SECTION TITLE */
+    .section-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text2);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+      margin-top: 20px;
+    }
+
+    /* PROGRESS */
+    .progress-bar {
+      background: var(--surface2);
+      border-radius: 99px;
+      height: 6px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--teal), var(--green));
+      border-radius: 99px;
+      transition: width 0.4s ease;
+    }
+
+    /* CATEGORY PILLS */
+    .categories {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+    .cat-pill {
+      border: 1px solid var(--border);
+      border-radius: 99px;
+      padding: 7px 16px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      background: none;
+      color: var(--text2);
+      font-family: inherit;
+      transition: all 0.2s;
+    }
+    .cat-pill.active, .cat-pill:hover {
+      background: var(--teal);
+      color: #0f0f1a;
+      border-color: var(--teal);
+    }
+
+    /* FLASHCARD */
+    .card-scene {
+      perspective: 1000px;
+      margin: 0 0 24px;
+      cursor: pointer;
+    }
+    .card-3d {
+      position: relative;
+      width: 100%;
+      padding-bottom: 60%;
+      transform-style: preserve-3d;
+      transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .card-3d.flipped { transform: rotateY(180deg); }
+    .card-face {
+      position: absolute;
+      inset: 0;
+      border-radius: var(--radius);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+    .card-front {
+      background: linear-gradient(135deg, var(--surface2) 0%, #0d1b38 100%);
+      border: 1px solid rgba(0, 180, 216, 0.3);
+    }
+    .card-back {
+      background: linear-gradient(135deg, #0d2018 0%, #0a1a10 100%);
+      border: 1px solid rgba(6, 214, 160, 0.3);
+      transform: rotateY(180deg);
+    }
+    .card-tag {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--teal);
+      margin-bottom: 12px;
+      opacity: 0.8;
+    }
+    .card-back .card-tag { color: var(--green); }
+    .card-word {
+      font-size: 28px;
+      font-weight: 700;
+      text-align: center;
+      letter-spacing: -0.5px;
+      line-height: 1.2;
+    }
+    .card-phonetic {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      color: var(--text2);
+      margin-top: 8px;
+    }
+    .card-example {
+      font-size: 14px;
+      color: var(--text2);
+      text-align: center;
+      margin-top: 12px;
+      font-style: italic;
+      line-height: 1.5;
+    }
+    .card-hint {
+      font-size: 11px;
+      color: var(--text2);
+      opacity: 0.6;
+      position: absolute;
+      bottom: 16px;
+    }
+
+    /* CARD COUNTER */
+    .card-counter {
+      text-align: center;
+      font-size: 13px;
+      color: var(--text2);
+      margin-bottom: 12px;
+    }
+
+    /* RATING BUTTONS */
+    .rating-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .rating-btn {
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: 14px 8px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .rating-btn:active { transform: scale(0.96); }
+    .rating-btn.hard { background: rgba(233,69,96,0.15); color: var(--accent); }
+    .rating-btn.ok   { background: rgba(255,209,102,0.15); color: var(--amber); }
+    .rating-btn.easy { background: rgba(6,214,160,0.15); color: var(--green); }
+    .rating-btn .r-emoji { font-size: 20px; }
+    .rating-hidden { display: none !important; }
+
+    /* WORD LIST */
+    .word-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .word-item:hover { border-color: rgba(0,180,216,0.4); }
+    .word-en { font-weight: 600; font-size: 15px; }
+    .word-fr { font-size: 13px; color: var(--text2); margin-top: 2px; }
+    .word-cat {
+      font-size: 10px;
+      padding: 3px 10px;
+      border-radius: 99px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .cat-lab { background: rgba(0,180,216,0.15); color: var(--teal); }
+    .cat-daily { background: rgba(6,214,160,0.15); color: var(--green); }
+    .cat-phrases { background: rgba(255,209,102,0.15); color: var(--amber); }
+    .cat-biomech { background: rgba(233,69,96,0.15); color: var(--accent); }
+
+    /* MASTERY DOTS */
+    .mastery {
+      display: flex;
+      gap: 3px;
+    }
+    .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--border);
+    }
+    .dot.filled { background: var(--green); }
+
+    /* MODAL */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 200;
+      align-items: flex-end;
+      justify-content: center;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal {
+      background: var(--surface);
+      border-radius: var(--radius) var(--radius) 0 0;
+      padding: 24px 20px 40px;
+      width: 100%;
+      max-width: 430px;
+      border-top: 1px solid var(--border);
+      animation: slideUp 0.25s ease;
+    }
+    @keyframes slideUp {
+      from { transform: translateY(30px); opacity: 0; }
+      to   { transform: translateY(0);    opacity: 1; }
+    }
+    .modal-handle {
+      width: 40px;
+      height: 4px;
+      background: var(--border);
+      border-radius: 99px;
+      margin: 0 auto 20px;
+    }
+    .modal-en { font-size: 24px; font-weight: 700; margin-bottom: 4px; }
+    .modal-phonetic { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--teal); margin-bottom: 12px; }
+    .modal-fr { font-size: 16px; color: var(--text2); margin-bottom: 16px; }
+    .modal-examples { border-top: 1px solid var(--border); padding-top: 16px; }
+    .example-item {
+      margin-bottom: 12px;
+      padding-left: 12px;
+      border-left: 2px solid var(--teal);
+    }
+    .example-en { font-size: 14px; font-weight: 500; }
+    .example-fr { font-size: 13px; color: var(--text2); margin-top: 2px; }
+    .modal-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: var(--surface2);
+      border: none;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      color: var(--text2);
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* SETTINGS */
+    .settings-block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+    .settings-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--border);
+    }
+    .settings-row:last-child { border-bottom: none; }
+    .settings-label { font-size: 15px; font-weight: 500; }
+    .settings-sub { font-size: 12px; color: var(--text2); margin-top: 2px; }
+    .toggle {
+      width: 48px;
+      height: 26px;
+      border-radius: 99px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      position: relative;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .toggle.on { background: var(--teal); border-color: var(--teal); }
+    .toggle-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--text2);
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      transition: all 0.2s;
+    }
+    .toggle.on .toggle-thumb { left: 24px; background: #0f0f1a; }
+
+    /* COMPLETE CARD */
+    .complete-card {
+      background: linear-gradient(135deg, #0d2018, #0a1a10);
+      border: 1px solid rgba(6,214,160,0.4);
+      border-radius: var(--radius);
+      padding: 32px 24px;
+      text-align: center;
+    }
+    .complete-emoji { font-size: 56px; margin-bottom: 12px; display: block; }
+    .complete-title { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+    .complete-sub { color: var(--text2); font-size: 14px; margin-bottom: 24px; }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--teal), #0096b7);
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: 14px 32px;
+      color: #0f0f1a;
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      width: 100%;
+    }
+    .btn-secondary {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 14px 32px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    /* EMPTY STATE */
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text2);
+    }
+    .empty-icon { font-size: 40px; margin-bottom: 12px; }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="logo">English<span>Lab</span></div>
+  <div class="streak-badge">🔥 <span id="streakCount">0</span> jour(s)</div>
+</div>
+
+<!-- NAV -->
+<nav class="nav">
+  <button class="nav-btn active" onclick="showPage('home')" id="nav-home">
+    <span class="nav-icon">🏠</span>Accueil
+  </button>
+  <button class="nav-btn" onclick="showPage('flashcards')" id="nav-flashcards">
+    <span class="nav-icon">🃏</span>Cartes
+  </button>
+  <button class="nav-btn" onclick="showPage('vocabulary')" id="nav-vocabulary">
+    <span class="nav-icon">📚</span>Vocab
+  </button>
+  <button class="nav-btn" onclick="showPage('settings')" id="nav-settings">
+    <span class="nav-icon">⚙️</span>Options
+  </button>
+</nav>
+
+<!-- HOME PAGE -->
+<div class="page active" id="page-home">
+  <div class="stats-row" style="margin-top:20px;">
+    <div class="stat-card">
+      <div class="stat-num" id="stat-total">0</div>
+      <div class="stat-label">Mots appris</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="stat-due">0</div>
+      <div class="stat-label">À réviser</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="stat-mastered">0</div>
+      <div class="stat-label">Maîtrisés</div>
+    </div>
+  </div>
+
+  <div class="section-title">Progression globale</div>
+  <div class="progress-bar">
+    <div class="progress-fill" id="globalProgress" style="width:0%"></div>
+  </div>
+
+  <div class="section-title">Catégories</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px;">
+    <div class="stat-card" style="cursor:pointer;" onclick="startCategory('lab')">
+      <div style="font-size:24px;margin-bottom:6px;">🔬</div>
+      <div style="font-weight:600;font-size:14px;">Laboratoire</div>
+      <div class="stat-label" id="cat-lab-count"></div>
+    </div>
+    <div class="stat-card" style="cursor:pointer;" onclick="startCategory('daily')">
+      <div style="font-size:24px;margin-bottom:6px;">💬</div>
+      <div style="font-weight:600;font-size:14px;">Quotidien</div>
+      <div class="stat-label" id="cat-daily-count"></div>
+    </div>
+    <div class="stat-card" style="cursor:pointer;" onclick="startCategory('phrases')">
+      <div style="font-size:24px;margin-bottom:6px;">🗣️</div>
+      <div style="font-weight:600;font-size:14px;">Phrases clés</div>
+      <div class="stat-label" id="cat-phrases-count"></div>
+    </div>
+    <div class="stat-card" style="cursor:pointer;" onclick="startCategory('biomech')">
+      <div style="font-size:24px;margin-bottom:6px;">🦴</div>
+      <div style="font-weight:600;font-size:14px;">Biomécanique</div>
+      <div class="stat-label" id="cat-biomech-count"></div>
+    </div>
+  </div>
+
+  <button class="btn-primary" onclick="startDueSession()">
+    Commencer la révision du jour 🚀
+  </button>
+</div>
+
+<!-- FLASHCARDS PAGE -->
+<div class="page" id="page-flashcards">
+  <div id="session-setup">
+    <div class="section-title" style="margin-top:0;">Choisir une catégorie</div>
+    <div class="categories" id="fc-categories">
+      <button class="cat-pill active" onclick="selectCat('all',this)">Tout</button>
+      <button class="cat-pill" onclick="selectCat('lab',this)">🔬 Labo</button>
+      <button class="cat-pill" onclick="selectCat('daily',this)">💬 Quotidien</button>
+      <button class="cat-pill" onclick="selectCat('phrases',this)">🗣️ Phrases</button>
+      <button class="cat-pill" onclick="selectCat('biomech',this)">🦴 Biomech</button>
+    </div>
+    <button class="btn-primary" onclick="startSession()">Démarrer les flashcards ▶</button>
+  </div>
+
+  <div id="session-active" style="display:none;">
+    <div class="card-counter"><span id="card-current">1</span> / <span id="card-total">10</span></div>
+    <div class="card-scene" onclick="flipCard()">
+      <div class="card-3d" id="card3d">
+        <div class="card-face card-front">
+          <div class="card-tag">🇬🇧 Anglais — Appuyez pour voir</div>
+          <div class="card-word" id="cardWordEn">—</div>
+          <div class="card-phonetic" id="cardPhonetic"></div>
+          <span class="card-hint">Appuie pour retourner</span>
+        </div>
+        <div class="card-face card-back">
+          <div class="card-tag">🇫🇷 Traduction</div>
+          <div class="card-word" id="cardWordFr">—</div>
+          <div class="card-example" id="cardExample"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="rating-row rating-hidden" id="ratingRow">
+      <button class="rating-btn hard" onclick="rateCard(1)">
+        <span class="r-emoji">😓</span>Difficile
+      </button>
+      <button class="rating-btn ok" onclick="rateCard(2)">
+        <span class="r-emoji">🤔</span>Moyen
+      </button>
+      <button class="rating-btn easy" onclick="rateCard(3)">
+        <span class="r-emoji">😊</span>Facile
+      </button>
+    </div>
+  </div>
+
+  <div id="session-done" style="display:none;padding-top:20px;">
+    <div class="complete-card">
+      <span class="complete-emoji">🎉</span>
+      <div class="complete-title">Session terminée !</div>
+      <div class="complete-sub" id="session-summary">Bien joué !</div>
+      <button class="btn-primary" onclick="startSession()">Recommencer</button>
+      <button class="btn-secondary" onclick="showPage('home')">Retour accueil</button>
+    </div>
+  </div>
+</div>
+
+<!-- VOCABULARY PAGE -->
+<div class="page" id="page-vocabulary">
+  <div class="categories" style="margin-top:0;" id="vocab-cats">
+    <button class="cat-pill active" onclick="filterVocab('all',this)">Tout</button>
+    <button class="cat-pill" onclick="filterVocab('lab',this)">🔬 Labo</button>
+    <button class="cat-pill" onclick="filterVocab('daily',this)">💬 Quotidien</button>
+    <button class="cat-pill" onclick="filterVocab('phrases',this)">🗣️ Phrases</button>
+    <button class="cat-pill" onclick="filterVocab('biomech',this)">🦴 Biomech</button>
+  </div>
+  <div id="vocab-list"></div>
+</div>
+
+<!-- SETTINGS PAGE -->
+<div class="page" id="page-settings">
+  <div style="margin-top:0;">
+    <div class="section-title" style="margin-top:0;">Application</div>
+    <div class="settings-block">
+      <div class="settings-row">
+        <div>
+          <div class="settings-label">Son à la révélation</div>
+          <div class="settings-sub">Petit son quand tu retournes la carte</div>
+        </div>
+        <div class="toggle" id="toggle-sound" onclick="toggleSetting('sound')">
+          <div class="toggle-thumb"></div>
+        </div>
+      </div>
+      <div class="settings-row">
+        <div>
+          <div class="settings-label">Mode aléatoire</div>
+          <div class="settings-sub">Mélanger les cartes</div>
+        </div>
+        <div class="toggle on" id="toggle-shuffle" onclick="toggleSetting('shuffle')">
+          <div class="toggle-thumb"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-title">Données</div>
+    <div class="settings-block">
+      <div class="settings-row" style="cursor:pointer;" onclick="resetProgress()">
+        <div>
+          <div class="settings-label" style="color:var(--accent);">Réinitialiser la progression</div>
+          <div class="settings-sub">Remet tous les compteurs à zéro</div>
+        </div>
+        <div style="color:var(--text2);">→</div>
+      </div>
+    </div>
+
+    <div class="section-title">Installation</div>
+    <div class="settings-block">
+      <div class="settings-row">
+        <div>
+          <div class="settings-label">Installer sur Android</div>
+          <div class="settings-sub">Menu ⋮ → "Ajouter à l'écran d'accueil"</div>
+        </div>
+        <div>📱</div>
+      </div>
+      <div class="settings-row">
+        <div>
+          <div class="settings-label">Installer sur iPhone</div>
+          <div class="settings-sub">Bouton partage → "Sur l'écran d'accueil"</div>
+        </div>
+        <div>🍎</div>
+      </div>
+    </div>
+
+    <div style="text-align:center;color:var(--text2);font-size:12px;margin-top:24px;">
+      English Lab v1.0 — créé pour toi 🧬
+    </div>
+  </div>
+</div>
+
+<!-- WORD DETAIL MODAL -->
+<div class="modal-backdrop" id="wordModal" onclick="closeModal(event)">
+  <div class="modal" style="position:relative;">
+    <button class="modal-close" onclick="closeModalDirect()">✕</button>
+    <div class="modal-handle"></div>
+    <div class="modal-en" id="modal-en"></div>
+    <div class="modal-phonetic" id="modal-phonetic"></div>
+    <div class="modal-fr" id="modal-fr"></div>
+    <div class="modal-examples" id="modal-examples"></div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════
+//  VOCABULARY DATABASE
+// ═══════════════════════════════════════
+const VOCAB = [
+  // 🔬 LABORATOIRE
+  { id:1, en:"sample",       ph:"/ˈsæmpəl/",    fr:"échantillon",        cat:"lab",
+    ex:[{en:"I need to prepare the samples.",fr:"Je dois préparer les échantillons."},
+        {en:"The sample was contaminated.",fr:"L'échantillon était contaminé."}] },
+  { id:2, en:"results",      ph:"/rɪˈzʌlts/",   fr:"résultats",          cat:"lab",
+    ex:[{en:"Have you checked the results?",fr:"As-tu vérifié les résultats?"},
+        {en:"The results are promising.",fr:"Les résultats sont prometteurs."}] },
+  { id:3, en:"measurement",  ph:"/ˈmeʒəmənt/",  fr:"mesure / mesurage",  cat:"lab",
+    ex:[{en:"The measurement was accurate.",fr:"La mesure était précise."},
+        {en:"We need to repeat the measurement.",fr:"Nous devons répéter la mesure."}] },
+  { id:4, en:"data",         ph:"/ˈdeɪtə/",     fr:"données",            cat:"lab",
+    ex:[{en:"Can you share the data?",fr:"Peux-tu partager les données?"},
+        {en:"We need more data.",fr:"Nous avons besoin de plus de données."}] },
+  { id:5, en:"protocol",     ph:"/ˈprəʊtəkɒl/", fr:"protocole",          cat:"lab",
+    ex:[{en:"Follow the protocol carefully.",fr:"Suivez le protocole attentivement."},
+        {en:"The protocol needs to be updated.",fr:"Le protocole doit être mis à jour."}] },
+  { id:6, en:"calibration",  ph:"/ˌkælɪˈbreɪʃən/", fr:"calibration / étalonnage", cat:"lab",
+    ex:[{en:"The calibration is off.",fr:"L'étalonnage est incorrect."},
+        {en:"Let me run the calibration again.",fr:"Laisse-moi relancer la calibration."}] },
+  { id:7, en:"equipment",    ph:"/ɪˈkwɪpmənt/", fr:"équipement / matériel", cat:"lab",
+    ex:[{en:"The equipment is broken.",fr:"L'équipement est cassé."},
+        {en:"We need new equipment.",fr:"Nous avons besoin de nouveau matériel."}] },
+  { id:8, en:"analysis",     ph:"/əˈnæləsɪs/",  fr:"analyse",            cat:"lab",
+    ex:[{en:"The analysis takes two hours.",fr:"L'analyse prend deux heures."},
+        {en:"Statistical analysis is required.",fr:"Une analyse statistique est nécessaire."}] },
+  { id:9, en:"software",     ph:"/ˈsɒftweə/",   fr:"logiciel",           cat:"lab",
+    ex:[{en:"Which software do you use?",fr:"Quel logiciel utilisez-vous?"},
+        {en:"The software crashed.",fr:"Le logiciel a planté."}] },
+  { id:10, en:"trial",       ph:"/ˈtraɪəl/",    fr:"essai / test",       cat:"lab",
+    ex:[{en:"We ran three trials.",fr:"Nous avons effectué trois essais."},
+        {en:"The first trial failed.",fr:"Le premier essai a échoué."}] },
+
+  // 💬 QUOTIDIEN
+  { id:11, en:"by the way",  ph:"/baɪ ðə weɪ/", fr:"au fait / d'ailleurs", cat:"daily",
+    ex:[{en:"By the way, did you see the email?",fr:"Au fait, as-tu vu l'e-mail?"}] },
+  { id:12, en:"I was wondering", ph:"/aɪ wɒz ˈwʌndərɪŋ/", fr:"je me demandais", cat:"daily",
+    ex:[{en:"I was wondering if you could help me.",fr:"Je me demandais si tu pouvais m'aider."}] },
+  { id:13, en:"Could you repeat that?", ph:"/kʊd juː rɪˈpiːt ðæt/", fr:"Pouvez-vous répéter?", cat:"daily",
+    ex:[{en:"Sorry, could you repeat that please?",fr:"Désolé, pouvez-vous répéter s'il vous plaît?"}] },
+  { id:14, en:"deadline",    ph:"/ˈdedlaɪn/",   fr:"date limite / délai", cat:"daily",
+    ex:[{en:"What is the deadline?",fr:"Quelle est la date limite?"},
+        {en:"We missed the deadline.",fr:"Nous avons raté la date limite."}] },
+  { id:15, en:"meeting",     ph:"/ˈmiːtɪŋ/",    fr:"réunion",            cat:"daily",
+    ex:[{en:"The meeting is at 10.",fr:"La réunion est à 10h."},
+        {en:"Can we reschedule the meeting?",fr:"Peut-on reporter la réunion?"}] },
+  { id:16, en:"feedback",    ph:"/ˈfiːdbæk/",   fr:"retour / avis",      cat:"daily",
+    ex:[{en:"Do you have any feedback?",fr:"Avez-vous des retours?"},
+        {en:"I appreciate your feedback.",fr:"J'apprécie votre retour."}] },
+  { id:17, en:"roughly",     ph:"/ˈrʌfli/",     fr:"à peu près / environ", cat:"daily",
+    ex:[{en:"It takes roughly 30 minutes.",fr:"Cela prend à peu près 30 minutes."},
+        {en:"There were roughly 20 people.",fr:"Il y avait environ 20 personnes."}] },
+  { id:18, en:"actually",    ph:"/ˈæktʃuəli/",  fr:"en fait / vraiment", cat:"daily",
+    ex:[{en:"Actually, I disagree.",fr:"En fait, je ne suis pas d'accord."},
+        {en:"That's actually a good idea.",fr:"C'est vraiment une bonne idée."}] },
+  { id:19, en:"straightforward", ph:"/ˌstreɪtˈfɔːwəd/", fr:"simple / direct", cat:"daily",
+    ex:[{en:"The process is straightforward.",fr:"Le processus est simple."},
+        {en:"Just be straightforward with me.",fr:"Sois direct avec moi."}] },
+  { id:20, en:"overview",    ph:"/ˈəʊvəvjuː/",  fr:"vue d'ensemble / résumé", cat:"daily",
+    ex:[{en:"Can you give me an overview?",fr:"Peux-tu me donner une vue d'ensemble?"}] },
+
+  // 🗣️ PHRASES CLÉS
+  { id:21, en:"I'm not sure I follow", ph:"/aɪm nɒt ʃʊər aɪ ˈfɒləʊ/", fr:"Je ne suis pas sûr de comprendre", cat:"phrases",
+    ex:[{en:"I'm not sure I follow — could you explain?",fr:"Je ne suis pas sûr de comprendre — pourriez-vous expliquer?"}] },
+  { id:22, en:"Let me check and get back to you", ph:"", fr:"Laissez-moi vérifier et je reviens vers vous", cat:"phrases",
+    ex:[{en:"Let me check and get back to you by tomorrow.",fr:"Laissez-moi vérifier et je reviens vers vous demain."}] },
+  { id:23, en:"As far as I know", ph:"/æz fɑː æz aɪ nəʊ/", fr:"Pour autant que je sache", cat:"phrases",
+    ex:[{en:"As far as I know, the test passed.",fr:"Pour autant que je sache, le test a réussi."}] },
+  { id:24, en:"Could you slow down a bit?", ph:"", fr:"Pourriez-vous ralentir un peu?", cat:"phrases",
+    ex:[{en:"Sorry, could you slow down a bit? My English is not perfect.",fr:"Désolé, pourriez-vous ralentir? Mon anglais n'est pas parfait."}] },
+  { id:25, en:"In other words", ph:"/ɪn ˈʌðə wɜːdz/", fr:"Autrement dit / En d'autres termes", cat:"phrases",
+    ex:[{en:"In other words, we need more time.",fr:"Autrement dit, nous avons besoin de plus de temps."}] },
+  { id:26, en:"That makes sense", ph:"/ðæt meɪks sens/", fr:"C'est logique / Je comprends", cat:"phrases",
+    ex:[{en:"Yes, that makes sense now.",fr:"Oui, c'est logique maintenant."}] },
+  { id:27, en:"What do you mean by...?", ph:"", fr:"Que voulez-vous dire par...?", cat:"phrases",
+    ex:[{en:"What do you mean by 'baseline'?",fr:"Que voulez-vous dire par 'baseline'?"}] },
+  { id:28, en:"I'll try my best", ph:"/aɪl traɪ maɪ best/", fr:"Je ferai de mon mieux", cat:"phrases",
+    ex:[{en:"I'll try my best to finish by Friday.",fr:"Je ferai de mon mieux pour finir vendredi."}] },
+
+  // 🦴 BIOMÉCANIQUE
+  { id:29, en:"gait",        ph:"/ɡeɪt/",       fr:"démarche / marche",  cat:"biomech",
+    ex:[{en:"We analyzed the patient's gait.",fr:"Nous avons analysé la démarche du patient."},
+        {en:"Gait analysis is our specialty.",fr:"L'analyse de la marche est notre spécialité."}] },
+  { id:30, en:"joint",       ph:"/dʒɔɪnt/",     fr:"articulation",       cat:"biomech",
+    ex:[{en:"The knee joint is under stress.",fr:"L'articulation du genou est sous pression."},
+        {en:"We measure joint angles.",fr:"Nous mesurons les angles articulaires."}] },
+  { id:31, en:"force plate",  ph:"/fɔːs pleɪt/", fr:"plateforme de force", cat:"biomech",
+    ex:[{en:"Stand on the force plate, please.",fr:"Mettez-vous sur la plateforme de force, s'il vous plaît."}] },
+  { id:32, en:"motion capture", ph:"/ˈməʊʃən ˈkæptʃə/", fr:"capture de mouvement", cat:"biomech",
+    ex:[{en:"We use motion capture for analysis.",fr:"Nous utilisons la capture de mouvement pour l'analyse."}] },
+  { id:33, en:"strain",      ph:"/streɪn/",     fr:"déformation / contrainte", cat:"biomech",
+    ex:[{en:"The strain on the bone was measured.",fr:"La déformation de l'os a été mesurée."}] },
+  { id:34, en:"load",        ph:"/ləʊd/",       fr:"charge / chargement", cat:"biomech",
+    ex:[{en:"What is the maximum load?",fr:"Quelle est la charge maximale?"},
+        {en:"The load was evenly distributed.",fr:"La charge était uniformément répartie."}] },
+  { id:35, en:"range of motion", ph:"/reɪndʒ əv ˈməʊʃən/", fr:"amplitude de mouvement", cat:"biomech",
+    ex:[{en:"The range of motion is limited.",fr:"L'amplitude de mouvement est limitée."}] },
+  { id:36, en:"marker",      ph:"/ˈmɑːkə/",    fr:"marqueur (réflectif)", cat:"biomech",
+    ex:[{en:"Place the marker on the hip.",fr:"Placez le marqueur sur la hanche."},
+        {en:"The marker fell off.",fr:"Le marqueur est tombé."}] },
+  { id:37, en:"posture",     ph:"/ˈpɒstʃə/",   fr:"posture",            cat:"biomech",
+    ex:[{en:"Check the subject's posture.",fr:"Vérifiez la posture du sujet."}] },
+  { id:38, en:"velocity",    ph:"/vəˈlɒsɪti/",  fr:"vitesse / vélocité", cat:"biomech",
+    ex:[{en:"We measure walking velocity.",fr:"Nous mesurons la vitesse de marche."}] },
+  { id:39, en:"symmetry",    ph:"/ˈsɪmətri/",   fr:"symétrie",           cat:"biomech",
+    ex:[{en:"There is a symmetry issue.",fr:"Il y a un problème de symétrie."}] },
+  { id:40, en:"baseline",    ph:"/ˈbeɪslaɪn/",  fr:"valeur de référence / ligne de base", cat:"biomech",
+    ex:[{en:"We need to establish a baseline.",fr:"Nous devons établir une valeur de référence."},
+        {en:"Compare it to the baseline.",fr:"Comparez-le à la référence."}] },
+];
+
+// ═══════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════
+let state = JSON.parse(localStorage.getItem('englishlab') || '{}');
+if (!state.scores) state.scores = {};
+if (!state.streak) state.streak = 0;
+if (!state.lastDate) state.lastDate = '';
+if (!state.settings) state.settings = { sound: false, shuffle: true };
+
+let session = { cards: [], index: 0, flipped: false, easy: 0, hard: 0 };
+let currentCat = 'all';
+
+function save() { localStorage.setItem('englishlab', JSON.stringify(state)); }
+
+// ═══════════════════════════════════════
+//  STREAK
+// ═══════════════════════════════════════
+function checkStreak() {
+  const today = new Date().toDateString();
+  if (state.lastDate !== today) {
+    const yesterday = new Date(Date.now() - 86400000).toDateString();
+    if (state.lastDate === yesterday) state.streak++;
+    else if (state.lastDate !== today) state.streak = state.lastDate ? 1 : (state.streak || 0);
+  }
+}
+checkStreak();
+document.getElementById('streakCount').textContent = state.streak;
+
+// ═══════════════════════════════════════
+//  NAV
+// ═══════════════════════════════════════
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  document.getElementById('nav-' + id).classList.add('active');
+  if (id === 'home') updateHome();
+  if (id === 'vocabulary') renderVocab('all');
+}
+
+// ═══════════════════════════════════════
+//  HOME
+// ═══════════════════════════════════════
+function updateHome() {
+  const mastered = VOCAB.filter(v => (state.scores[v.id] || 0) >= 3).length;
+  const due = VOCAB.filter(v => (state.scores[v.id] || 0) < 3).length;
+  document.getElementById('stat-total').textContent = Object.keys(state.scores).length;
+  document.getElementById('stat-due').textContent = due;
+  document.getElementById('stat-mastered').textContent = mastered;
+  document.getElementById('globalProgress').style.width = Math.round(mastered / VOCAB.length * 100) + '%';
+
+  ['lab','daily','phrases','biomech'].forEach(c => {
+    const total = VOCAB.filter(v => v.cat === c).length;
+    const done  = VOCAB.filter(v => v.cat === c && (state.scores[v.id]||0) >= 3).length;
+    document.getElementById('cat-' + c + '-count').textContent = done + ' / ' + total + ' maîtrisés';
+  });
+}
+updateHome();
+
+// ═══════════════════════════════════════
+//  FLASHCARDS SESSION
+// ═══════════════════════════════════════
+function selectCat(cat, el) {
+  currentCat = cat;
+  document.querySelectorAll('#fc-categories .cat-pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function startCategory(cat) {
+  showPage('flashcards');
+  currentCat = cat;
+  document.querySelectorAll('#fc-categories .cat-pill').forEach(p => {
+    p.classList.toggle('active', p.textContent.toLowerCase().includes(cat) || (cat === 'all'));
+  });
+  startSession();
+}
+
+function startDueSession() {
+  showPage('flashcards');
+  currentCat = 'all';
+  startSession(true);
+}
+
+function startSession(dueOnly = false) {
+  document.getElementById('session-setup').style.display = 'none';
+  document.getElementById('session-done').style.display = 'none';
+  document.getElementById('session-active').style.display = 'block';
+
+  let cards = VOCAB.filter(v => currentCat === 'all' || v.cat === currentCat);
+  if (dueOnly) cards = cards.filter(v => (state.scores[v.id] || 0) < 3);
+  if (cards.length === 0) cards = VOCAB.slice(0, 10);
+  if (state.settings.shuffle) cards = cards.sort(() => Math.random() - 0.5);
+
+  session = { cards: cards.slice(0, 20), index: 0, flipped: false, easy: 0, hard: 0 };
+  showCard();
+}
+
+function showCard() {
+  const card = session.cards[session.index];
+  document.getElementById('card-current').textContent = session.index + 1;
+  document.getElementById('card-total').textContent = session.cards.length;
+  document.getElementById('cardWordEn').textContent = card.en;
+  document.getElementById('cardPhonetic').textContent = card.ph || '';
+  document.getElementById('cardWordFr').textContent = card.fr;
+  document.getElementById('cardExample').textContent = card.ex[0]?.en || '';
+
+  const c = document.getElementById('card3d');
+  c.classList.remove('flipped');
+  session.flipped = false;
+  document.getElementById('ratingRow').classList.add('rating-hidden');
+}
+
+function flipCard() {
+  if (session.flipped) return;
+  session.flipped = true;
+  document.getElementById('card3d').classList.add('flipped');
+  document.getElementById('ratingRow').classList.remove('rating-hidden');
+  if (state.settings.sound) { try { new AudioContext().createOscillator(); } catch(e) {} }
+}
+
+function rateCard(score) {
+  const card = session.cards[session.index];
+  const prev = state.scores[card.id] || 0;
+  if (score === 3) { state.scores[card.id] = Math.min(prev + 1, 3); session.easy++; }
+  if (score === 1) { state.scores[card.id] = Math.max(prev - 1, 0); session.hard++; }
+  state.lastDate = new Date().toDateString();
+  save();
+
+  session.index++;
+  if (session.index >= session.cards.length) {
+    endSession();
+  } else {
+    showCard();
+  }
+}
+
+function endSession() {
+  document.getElementById('session-active').style.display = 'none';
+  document.getElementById('session-done').style.display = 'block';
+  const total = session.easy + session.hard + (session.cards.length - session.easy - session.hard);
+  document.getElementById('session-summary').textContent =
+    `✅ ${session.easy} facile(s) · 😓 ${session.hard} difficile(s) sur ${session.cards.length} cartes`;
+  state.streak = (state.streak || 0);
+  if (session.easy > 0) { state.streak = Math.max(state.streak, 1); }
+  document.getElementById('streakCount').textContent = state.streak;
+  save();
+}
+
+// ═══════════════════════════════════════
+//  VOCABULARY LIST
+// ═══════════════════════════════════════
+function filterVocab(cat, el) {
+  document.querySelectorAll('#vocab-cats .cat-pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  renderVocab(cat);
+}
+
+function renderVocab(cat) {
+  const list = document.getElementById('vocab-list');
+  const items = cat === 'all' ? VOCAB : VOCAB.filter(v => v.cat === cat);
+  list.innerHTML = items.map(v => {
+    const score = state.scores[v.id] || 0;
+    const dots = [1,2,3].map(i => `<div class="dot ${i <= score ? 'filled' : ''}"></div>`).join('');
+    const catLabel = {lab:'lab',daily:'daily',phrases:'phrases',biomech:'biomech'}[v.cat];
+    const catText  = {lab:'Labo',daily:'Quotidien',phrases:'Phrase',biomech:'Biomech'}[v.cat];
+    return `<div class="word-item" onclick="openModal(${v.id})">
+      <div>
+        <div class="word-en">${v.en}</div>
+        <div class="word-fr">${v.fr}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
+        <span class="word-cat cat-${catLabel}">${catText}</span>
+        <div class="mastery">${dots}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+renderVocab('all');
+
+// ═══════════════════════════════════════
+//  MODAL
+// ═══════════════════════════════════════
+function openModal(id) {
+  const v = VOCAB.find(w => w.id === id);
+  document.getElementById('modal-en').textContent = v.en;
+  document.getElementById('modal-phonetic').textContent = v.ph || '';
+  document.getElementById('modal-fr').textContent = '🇫🇷 ' + v.fr;
+  document.getElementById('modal-examples').innerHTML = v.ex.map(e =>
+    `<div class="example-item">
+      <div class="example-en">${e.en}</div>
+      <div class="example-fr">${e.fr}</div>
+    </div>`
+  ).join('');
+  document.getElementById('wordModal').classList.add('open');
+}
+function closeModal(e) { if (e.target.id === 'wordModal') closeModalDirect(); }
+function closeModalDirect() { document.getElementById('wordModal').classList.remove('open'); }
+
+// ═══════════════════════════════════════
+//  SETTINGS
+// ═══════════════════════════════════════
+function toggleSetting(key) {
+  state.settings[key] = !state.settings[key];
+  const el = document.getElementById('toggle-' + key);
+  el.classList.toggle('on', state.settings[key]);
+  save();
+}
+// Init toggles
+Object.keys(state.settings).forEach(k => {
+  const el = document.getElementById('toggle-' + k);
+  if (el) el.classList.toggle('on', state.settings[k]);
+});
+
+function resetProgress() {
+  if (confirm('Réinitialiser toute la progression?')) {
+    state.scores = {};
+    state.streak = 0;
+    save();
+    updateHome();
+    renderVocab('all');
+    document.getElementById('streakCount').textContent = 0;
+    alert('Progression réinitialisée!');
+  }
+}
+
+// ═══════════════════════════════════════
+//  SERVICE WORKER REGISTRATION
+// ═══════════════════════════════════════
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(e => console.log('SW:', e));
+}
+</script>
+</body>
+</html>
