@@ -690,628 +690,9 @@
 
 <script>
 // ═══════════════════════════════════════
-//  VOCABULARY DATABASE
+//  VOCABULARY — chargée depuis vocabulary.json
 // ═══════════════════════════════════════
-const VOCAB = [
-  // 🔬 LABORATOIRE
-  { id:1, en:"sample",       ph:"/ˈsæmpəl/",    fr:"échantillon",        cat:"lab",
-    ex:[{en:"I need to prepare the samples.",fr:"Je dois préparer les échantillons."},
-        {en:"The sample was contaminated.",fr:"L'échantillon était contaminé."}] },
-  { id:2, en:"results",      ph:"/rɪˈzʌlts/",   fr:"résultats",          cat:"lab",
-    ex:[{en:"Have you checked the results?",fr:"As-tu vérifié les résultats?"},
-        {en:"The results are promising.",fr:"Les résultats sont prometteurs."}] },
-  { id:3, en:"measurement",  ph:"/ˈmeʒəmənt/",  fr:"mesure / mesurage",  cat:"lab",
-    ex:[{en:"The measurement was accurate.",fr:"La mesure était précise."},
-        {en:"We need to repeat the measurement.",fr:"Nous devons répéter la mesure."}] },
-  { id:4, en:"data",         ph:"/ˈdeɪtə/",     fr:"données",            cat:"lab",
-    ex:[{en:"Can you share the data?",fr:"Peux-tu partager les données?"},
-        {en:"We need more data.",fr:"Nous avons besoin de plus de données."}] },
-  { id:5, en:"protocol",     ph:"/ˈprəʊtəkɒl/", fr:"protocole",          cat:"lab",
-    ex:[{en:"Follow the protocol carefully.",fr:"Suivez le protocole attentivement."},
-        {en:"The protocol needs to be updated.",fr:"Le protocole doit être mis à jour."}] },
-  { id:6, en:"calibration",  ph:"/ˌkælɪˈbreɪʃən/", fr:"calibration / étalonnage", cat:"lab",
-    ex:[{en:"The calibration is off.",fr:"L'étalonnage est incorrect."},
-        {en:"Let me run the calibration again.",fr:"Laisse-moi relancer la calibration."}] },
-  { id:7, en:"equipment",    ph:"/ɪˈkwɪpmənt/", fr:"équipement / matériel", cat:"lab",
-    ex:[{en:"The equipment is broken.",fr:"L'équipement est cassé."},
-        {en:"We need new equipment.",fr:"Nous avons besoin de nouveau matériel."}] },
-  { id:8, en:"analysis",     ph:"/əˈnæləsɪs/",  fr:"analyse",            cat:"lab",
-    ex:[{en:"The analysis takes two hours.",fr:"L'analyse prend deux heures."},
-        {en:"Statistical analysis is required.",fr:"Une analyse statistique est nécessaire."}] },
-  { id:9, en:"software",     ph:"/ˈsɒftweə/",   fr:"logiciel",           cat:"lab",
-    ex:[{en:"Which software do you use?",fr:"Quel logiciel utilisez-vous?"},
-        {en:"The software crashed.",fr:"Le logiciel a planté."}] },
-  { id:10, en:"trial",       ph:"/ˈtraɪəl/",    fr:"essai / test",       cat:"lab",
-    ex:[{en:"We ran three trials.",fr:"Nous avons effectué trois essais."},
-        {en:"The first trial failed.",fr:"Le premier essai a échoué."}] },
-
-  // 💬 QUOTIDIEN
-  { id:11, en:"by the way",  ph:"/baɪ ðə weɪ/", fr:"au fait / d'ailleurs", cat:"daily",
-    ex:[{en:"By the way, did you see the email?",fr:"Au fait, as-tu vu l'e-mail?"}] },
-  { id:12, en:"I was wondering", ph:"/aɪ wɒz ˈwʌndərɪŋ/", fr:"je me demandais", cat:"daily",
-    ex:[{en:"I was wondering if you could help me.",fr:"Je me demandais si tu pouvais m'aider."}] },
-  { id:13, en:"Could you repeat that?", ph:"/kʊd juː rɪˈpiːt ðæt/", fr:"Pouvez-vous répéter?", cat:"daily",
-    ex:[{en:"Sorry, could you repeat that please?",fr:"Désolé, pouvez-vous répéter s'il vous plaît?"}] },
-  { id:14, en:"deadline",    ph:"/ˈdedlaɪn/",   fr:"date limite / délai", cat:"daily",
-    ex:[{en:"What is the deadline?",fr:"Quelle est la date limite?"},
-        {en:"We missed the deadline.",fr:"Nous avons raté la date limite."}] },
-  { id:15, en:"meeting",     ph:"/ˈmiːtɪŋ/",    fr:"réunion",            cat:"daily",
-    ex:[{en:"The meeting is at 10.",fr:"La réunion est à 10h."},
-        {en:"Can we reschedule the meeting?",fr:"Peut-on reporter la réunion?"}] },
-  { id:16, en:"feedback",    ph:"/ˈfiːdbæk/",   fr:"retour / avis",      cat:"daily",
-    ex:[{en:"Do you have any feedback?",fr:"Avez-vous des retours?"},
-        {en:"I appreciate your feedback.",fr:"J'apprécie votre retour."}] },
-  { id:17, en:"roughly",     ph:"/ˈrʌfli/",     fr:"à peu près / environ", cat:"daily",
-    ex:[{en:"It takes roughly 30 minutes.",fr:"Cela prend à peu près 30 minutes."},
-        {en:"There were roughly 20 people.",fr:"Il y avait environ 20 personnes."}] },
-  { id:18, en:"actually",    ph:"/ˈæktʃuəli/",  fr:"en fait / vraiment", cat:"daily",
-    ex:[{en:"Actually, I disagree.",fr:"En fait, je ne suis pas d'accord."},
-        {en:"That's actually a good idea.",fr:"C'est vraiment une bonne idée."}] },
-  { id:19, en:"straightforward", ph:"/ˌstreɪtˈfɔːwəd/", fr:"simple / direct", cat:"daily",
-    ex:[{en:"The process is straightforward.",fr:"Le processus est simple."},
-        {en:"Just be straightforward with me.",fr:"Sois direct avec moi."}] },
-  { id:20, en:"overview",    ph:"/ˈəʊvəvjuː/",  fr:"vue d'ensemble / résumé", cat:"daily",
-    ex:[{en:"Can you give me an overview?",fr:"Peux-tu me donner une vue d'ensemble?"}] },
-
-  // 🗣️ PHRASES CLÉS
-  { id:21, en:"I'm not sure I follow", ph:"/aɪm nɒt ʃʊər aɪ ˈfɒləʊ/", fr:"Je ne suis pas sûr de comprendre", cat:"phrases",
-    ex:[{en:"I'm not sure I follow — could you explain?",fr:"Je ne suis pas sûr de comprendre — pourriez-vous expliquer?"}] },
-  { id:22, en:"Let me check and get back to you", ph:"", fr:"Laissez-moi vérifier et je reviens vers vous", cat:"phrases",
-    ex:[{en:"Let me check and get back to you by tomorrow.",fr:"Laissez-moi vérifier et je reviens vers vous demain."}] },
-  { id:23, en:"As far as I know", ph:"/æz fɑː æz aɪ nəʊ/", fr:"Pour autant que je sache", cat:"phrases",
-    ex:[{en:"As far as I know, the test passed.",fr:"Pour autant que je sache, le test a réussi."}] },
-  { id:24, en:"Could you slow down a bit?", ph:"", fr:"Pourriez-vous ralentir un peu?", cat:"phrases",
-    ex:[{en:"Sorry, could you slow down a bit? My English is not perfect.",fr:"Désolé, pourriez-vous ralentir? Mon anglais n'est pas parfait."}] },
-  { id:25, en:"In other words", ph:"/ɪn ˈʌðə wɜːdz/", fr:"Autrement dit / En d'autres termes", cat:"phrases",
-    ex:[{en:"In other words, we need more time.",fr:"Autrement dit, nous avons besoin de plus de temps."}] },
-  { id:26, en:"That makes sense", ph:"/ðæt meɪks sens/", fr:"C'est logique / Je comprends", cat:"phrases",
-    ex:[{en:"Yes, that makes sense now.",fr:"Oui, c'est logique maintenant."}] },
-  { id:27, en:"What do you mean by...?", ph:"", fr:"Que voulez-vous dire par...?", cat:"phrases",
-    ex:[{en:"What do you mean by 'baseline'?",fr:"Que voulez-vous dire par 'baseline'?"}] },
-  { id:28, en:"I'll try my best", ph:"/aɪl traɪ maɪ best/", fr:"Je ferai de mon mieux", cat:"phrases",
-    ex:[{en:"I'll try my best to finish by Friday.",fr:"Je ferai de mon mieux pour finir vendredi."}] },
-
-  // 🦴 BIOMÉCANIQUE
-  { id:29, en:"gait",        ph:"/ɡeɪt/",       fr:"démarche / marche",  cat:"biomech",
-    ex:[{en:"We analyzed the patient's gait.",fr:"Nous avons analysé la démarche du patient."},
-        {en:"Gait analysis is our specialty.",fr:"L'analyse de la marche est notre spécialité."}] },
-  { id:30, en:"joint",       ph:"/dʒɔɪnt/",     fr:"articulation",       cat:"biomech",
-    ex:[{en:"The knee joint is under stress.",fr:"L'articulation du genou est sous pression."},
-        {en:"We measure joint angles.",fr:"Nous mesurons les angles articulaires."}] },
-  { id:31, en:"force plate",  ph:"/fɔːs pleɪt/", fr:"plateforme de force", cat:"biomech",
-    ex:[{en:"Stand on the force plate, please.",fr:"Mettez-vous sur la plateforme de force, s'il vous plaît."}] },
-  { id:32, en:"motion capture", ph:"/ˈməʊʃən ˈkæptʃə/", fr:"capture de mouvement", cat:"biomech",
-    ex:[{en:"We use motion capture for analysis.",fr:"Nous utilisons la capture de mouvement pour l'analyse."}] },
-  { id:33, en:"strain",      ph:"/streɪn/",     fr:"déformation / contrainte", cat:"biomech",
-    ex:[{en:"The strain on the bone was measured.",fr:"La déformation de l'os a été mesurée."}] },
-  { id:34, en:"load",        ph:"/ləʊd/",       fr:"charge / chargement", cat:"biomech",
-    ex:[{en:"What is the maximum load?",fr:"Quelle est la charge maximale?"},
-        {en:"The load was evenly distributed.",fr:"La charge était uniformément répartie."}] },
-  { id:35, en:"range of motion", ph:"/reɪndʒ əv ˈməʊʃən/", fr:"amplitude de mouvement", cat:"biomech",
-    ex:[{en:"The range of motion is limited.",fr:"L'amplitude de mouvement est limitée."}] },
-  { id:36, en:"marker",      ph:"/ˈmɑːkə/",    fr:"marqueur (réflectif)", cat:"biomech",
-    ex:[{en:"Place the marker on the hip.",fr:"Placez le marqueur sur la hanche."},
-        {en:"The marker fell off.",fr:"Le marqueur est tombé."}] },
-  { id:37, en:"posture",     ph:"/ˈpɒstʃə/",   fr:"posture",            cat:"biomech",
-    ex:[{en:"Check the subject's posture.",fr:"Vérifiez la posture du sujet."}] },
-  { id:38, en:"velocity",    ph:"/vəˈlɒsɪti/",  fr:"vitesse / vélocité", cat:"biomech",
-    ex:[{en:"We measure walking velocity.",fr:"Nous mesurons la vitesse de marche."}] },
-  { id:39, en:"symmetry",    ph:"/ˈsɪmətri/",   fr:"symétrie",           cat:"biomech",
-    ex:[{en:"There is a symmetry issue.",fr:"Il y a un problème de symétrie."}] },
-  { id:40, en:"baseline",    ph:"/ˈbeɪslaɪn/",  fr:"valeur de référence / ligne de base", cat:"biomech",
-    ex:[{en:"We need to establish a baseline.",fr:"Nous devons établir une valeur de référence."},
-        {en:"Compare it to the baseline.",fr:"Comparez-le à la référence."}] },
-
-  // 📘 PACK 1 — MOTS FRÉQUENTS (session 1 : verbes essentiels)
-  { id:41, en:"understand",  ph:"/ˌʌndəˈstænd/", fr:"comprendre", cat:"freq",
-    ex:[{en:"I don't understand this word.",fr:"Je ne comprends pas ce mot."},
-        {en:"Do you understand the instructions?",fr:"Comprends-tu les instructions?"}] },
-  { id:42, en:"explain",     ph:"/ɪkˈspleɪn/",  fr:"expliquer", cat:"freq",
-    ex:[{en:"Can you explain that again?",fr:"Peux-tu expliquer ça à nouveau?"},
-        {en:"Please explain your method.",fr:"Veuillez expliquer votre méthode."}] },
-  { id:43, en:"suggest",     ph:"/səˈdʒest/",   fr:"suggérer / proposer", cat:"freq",
-    ex:[{en:"I suggest we start over.",fr:"Je suggère qu'on recommence."},
-        {en:"What do you suggest?",fr:"Que suggères-tu?"}] },
-  { id:44, en:"improve",     ph:"/ɪmˈpruːv/",   fr:"améliorer / progresser", cat:"freq",
-    ex:[{en:"We need to improve the process.",fr:"Nous devons améliorer le processus."},
-        {en:"My English is improving.",fr:"Mon anglais s'améliore."}] },
-  { id:45, en:"achieve",     ph:"/əˈtʃiːv/",    fr:"atteindre / réaliser", cat:"freq",
-    ex:[{en:"We achieved our goal.",fr:"Nous avons atteint notre objectif."},
-        {en:"Hard work helps you achieve success.",fr:"Le travail acharné aide à réussir."}] },
-  { id:46, en:"involve",     ph:"/ɪnˈvɒlv/",    fr:"impliquer / inclure", cat:"freq",
-    ex:[{en:"This task involves many steps.",fr:"Cette tâche implique de nombreuses étapes."},
-        {en:"Are you involved in the project?",fr:"Es-tu impliqué dans le projet?"}] },
-  { id:47, en:"require",     ph:"/rɪˈkwaɪə/",   fr:"nécessiter / exiger", cat:"freq",
-    ex:[{en:"This requires more time.",fr:"Cela nécessite plus de temps."},
-        {en:"What does the job require?",fr:"Que nécessite le poste?"}] },
-  { id:48, en:"provide",     ph:"/prəˈvaɪd/",   fr:"fournir / donner", cat:"freq",
-    ex:[{en:"Can you provide more details?",fr:"Peux-tu fournir plus de détails?"},
-        {en:"We provide training to all staff.",fr:"Nous fournissons une formation à tout le personnel."}] },
-  { id:49, en:"consider",    ph:"/kənˈsɪdə/",   fr:"considérer / envisager", cat:"freq",
-    ex:[{en:"Consider all the options.",fr:"Considère toutes les options."},
-        {en:"I'm considering a new approach.",fr:"J'envisage une nouvelle approche."}] },
-  { id:50, en:"allow",       ph:"/əˈlaʊ/",      fr:"permettre / autoriser", cat:"freq",
-    ex:[{en:"This allows us to save time.",fr:"Cela nous permet de gagner du temps."},
-        {en:"Are cameras allowed here?",fr:"Les caméras sont-elles autorisées ici?"}] },
-  { id:51, en:"assume",      ph:"/əˈsjuːm/",    fr:"supposer / présumer", cat:"freq",
-    ex:[{en:"Don't assume — always verify.",fr:"Ne suppose pas — vérifie toujours."},
-        {en:"I assumed you knew.",fr:"J'ai supposé que tu savais."}] },
-  { id:52, en:"ensure",      ph:"/ɪnˈʃʊə/",     fr:"s'assurer / garantir", cat:"freq",
-    ex:[{en:"Ensure the door is locked.",fr:"Assure-toi que la porte est verrouillée."},
-        {en:"We must ensure accuracy.",fr:"Nous devons garantir la précision."}] },
-  { id:53, en:"apply",       ph:"/əˈplaɪ/",     fr:"appliquer / postuler", cat:"freq",
-    ex:[{en:"Apply the same method here.",fr:"Applique la même méthode ici."},
-        {en:"I applied for the position.",fr:"J'ai postulé pour le poste."}] },
-  { id:54, en:"identify",    ph:"/aɪˈdentɪfaɪ/", fr:"identifier / repérer", cat:"freq",
-    ex:[{en:"Can you identify the problem?",fr:"Peux-tu identifier le problème?"},
-        {en:"We identified three key issues.",fr:"Nous avons identifié trois problèmes clés."}] },
-  { id:55, en:"indicate",    ph:"/ˈɪndɪkeɪt/",  fr:"indiquer / montrer", cat:"freq",
-    ex:[{en:"The results indicate a problem.",fr:"Les résultats indiquent un problème."},
-        {en:"Please indicate your preference.",fr:"Veuillez indiquer votre préférence."}] },
-  { id:56, en:"confirm",     ph:"/kənˈfɜːm/",   fr:"confirmer", cat:"freq",
-    ex:[{en:"Can you confirm the meeting time?",fr:"Peux-tu confirmer l'heure de la réunion?"},
-        {en:"I'll confirm by email.",fr:"Je confirmerai par e-mail."}] },
-  { id:57, en:"compare",     ph:"/kəmˈpeə/",    fr:"comparer", cat:"freq",
-    ex:[{en:"Compare the two groups.",fr:"Comparez les deux groupes."},
-        {en:"How does it compare to last year?",fr:"Comment se compare-t-il à l'année dernière?"}] },
-  { id:58, en:"determine",   ph:"/dɪˈtɜːmɪn/",  fr:"déterminer / établir", cat:"freq",
-    ex:[{en:"We need to determine the cause.",fr:"Nous devons déterminer la cause."},
-        {en:"The test will determine the result.",fr:"Le test déterminera le résultat."}] },
-  { id:59, en:"estimate",    ph:"/ˈestɪmeɪt/",  fr:"estimer / évaluer", cat:"freq",
-    ex:[{en:"I estimate it will take 2 days.",fr:"J'estime que cela prendra 2 jours."},
-        {en:"Can you give me a rough estimate?",fr:"Peux-tu me donner une estimation rapide?"}] },
-  { id:60, en:"observe",     ph:"/əbˈzɜːv/",    fr:"observer / remarquer", cat:"freq",
-    ex:[{en:"Observe the subject carefully.",fr:"Observez le sujet attentivement."},
-        {en:"I observed some changes.",fr:"J'ai observé quelques changements."}] },
-
-  // 📘 PACK 1 — session 2 : adjectifs essentiels
-  { id:61, en:"significant",  ph:"/sɪɡˈnɪfɪkənt/", fr:"significatif / important", cat:"freq",
-    ex:[{en:"There is a significant difference.",fr:"Il y a une différence significative."},
-        {en:"This is a significant result.",fr:"C'est un résultat significatif."}] },
-  { id:62, en:"relevant",    ph:"/ˈreləvənt/",  fr:"pertinent / applicable", cat:"freq",
-    ex:[{en:"Is this information relevant?",fr:"Cette information est-elle pertinente?"},
-        {en:"Focus on relevant data only.",fr:"Concentrez-vous uniquement sur les données pertinentes."}] },
-  { id:63, en:"accurate",    ph:"/ˈækjərət/",   fr:"précis / exact", cat:"freq",
-    ex:[{en:"The measurement must be accurate.",fr:"La mesure doit être précise."},
-        {en:"Is this description accurate?",fr:"Cette description est-elle exacte?"}] },
-  { id:64, en:"consistent",  ph:"/kənˈsɪstənt/", fr:"cohérent / constant", cat:"freq",
-    ex:[{en:"The results are consistent.",fr:"Les résultats sont cohérents."},
-        {en:"Be consistent in your approach.",fr:"Sois constant dans ton approche."}] },
-  { id:65, en:"suitable",    ph:"/ˈsuːtəbəl/",  fr:"approprié / adapté", cat:"freq",
-    ex:[{en:"Is this method suitable?",fr:"Cette méthode est-elle appropriée?"},
-        {en:"Choose a suitable time.",fr:"Choisissez un moment approprié."}] },
-  { id:66, en:"appropriate",  ph:"/əˈprəʊpriət/", fr:"approprié / convenable", cat:"freq",
-    ex:[{en:"That's not appropriate here.",fr:"Ce n'est pas approprié ici."},
-        {en:"Use the appropriate tool.",fr:"Utilisez l'outil approprié."}] },
-  { id:67, en:"available",   ph:"/əˈveɪləbəl/", fr:"disponible", cat:"freq",
-    ex:[{en:"Are you available tomorrow?",fr:"Es-tu disponible demain?"},
-        {en:"The data is available online.",fr:"Les données sont disponibles en ligne."}] },
-  { id:68, en:"reliable",    ph:"/rɪˈlaɪəbəl/", fr:"fiable / sûr", cat:"freq",
-    ex:[{en:"We need a reliable method.",fr:"Nous avons besoin d'une méthode fiable."},
-        {en:"Is this source reliable?",fr:"Cette source est-elle fiable?"}] },
-  { id:69, en:"efficient",   ph:"/ɪˈfɪʃənt/",  fr:"efficace / efficient", cat:"freq",
-    ex:[{en:"We need a more efficient process.",fr:"Nous avons besoin d'un processus plus efficace."},
-        {en:"She is very efficient.",fr:"Elle est très efficace."}] },
-  { id:70, en:"complex",     ph:"/ˈkɒmpleks/",  fr:"complexe", cat:"freq",
-    ex:[{en:"This is a complex problem.",fr:"C'est un problème complexe."},
-        {en:"The system is quite complex.",fr:"Le système est assez complexe."}] },
-  { id:71, en:"specific",    ph:"/spəˈsɪfɪk/",  fr:"spécifique / précis", cat:"freq",
-    ex:[{en:"Can you be more specific?",fr:"Peux-tu être plus précis?"},
-        {en:"I have a specific question.",fr:"J'ai une question précise."}] },
-  { id:72, en:"obvious",     ph:"/ˈɒbviəs/",    fr:"évident / manifeste", cat:"freq",
-    ex:[{en:"The answer is obvious.",fr:"La réponse est évidente."},
-        {en:"It's obvious he is tired.",fr:"Il est évident qu'il est fatigué."}] },
-  { id:73, en:"previous",    ph:"/ˈpriːviəs/",  fr:"précédent / antérieur", cat:"freq",
-    ex:[{en:"See the previous slide.",fr:"Voir la diapositive précédente."},
-        {en:"In the previous study...",fr:"Dans l'étude précédente..."}] },
-  { id:74, en:"likely",      ph:"/ˈlaɪkli/",    fr:"probable / susceptible", cat:"freq",
-    ex:[{en:"It is likely to rain.",fr:"Il va probablement pleuvoir."},
-        {en:"What is the likely cause?",fr:"Quelle est la cause probable?"}] },
-  { id:75, en:"useful",      ph:"/ˈjuːsfəl/",   fr:"utile / pratique", cat:"freq",
-    ex:[{en:"That's a useful tip.",fr:"C'est un conseil utile."},
-        {en:"This tool is very useful.",fr:"Cet outil est très utile."}] },
-  { id:76, en:"common",      ph:"/ˈkɒmən/",     fr:"courant / fréquent / commun", cat:"freq",
-    ex:[{en:"This is a common mistake.",fr:"C'est une erreur courante."},
-        {en:"Common sense is important.",fr:"Le bon sens est important."}] },
-  { id:77, en:"similar",     ph:"/ˈsɪmɪlə/",    fr:"similaire / semblable", cat:"freq",
-    ex:[{en:"The results are similar.",fr:"Les résultats sont similaires."},
-        {en:"I had a similar experience.",fr:"J'ai eu une expérience similaire."}] },
-  { id:78, en:"various",     ph:"/ˈveəriəs/",   fr:"divers / varié", cat:"freq",
-    ex:[{en:"We tested various methods.",fr:"Nous avons testé diverses méthodes."},
-        {en:"There are various options.",fr:"Il y a diverses options."}] },
-  { id:79, en:"current",     ph:"/ˈkʌrənt/",    fr:"actuel / en cours", cat:"freq",
-    ex:[{en:"What is the current status?",fr:"Quel est le statut actuel?"},
-        {en:"The current version is 3.0.",fr:"La version actuelle est la 3.0."}] },
-  { id:80, en:"further",     ph:"/ˈfɜːðə/",     fr:"supplémentaire / plus loin", cat:"freq",
-    ex:[{en:"Do you need further help?",fr:"As-tu besoin d'aide supplémentaire?"},
-        {en:"Further research is needed.",fr:"Des recherches supplémentaires sont nécessaires."}] },
-
-  // 📘 PACK 1 — session 3 : noms essentiels
-  { id:81, en:"approach",    ph:"/əˈprəʊtʃ/",   fr:"approche / méthode", cat:"freq",
-    ex:[{en:"What approach did you use?",fr:"Quelle approche as-tu utilisée?"},
-        {en:"Try a different approach.",fr:"Essaie une approche différente."}] },
-  { id:82, en:"issue",       ph:"/ˈɪʃuː/",      fr:"problème / question", cat:"freq",
-    ex:[{en:"We have an issue with the sensor.",fr:"Nous avons un problème avec le capteur."},
-        {en:"That's not the main issue.",fr:"Ce n'est pas le problème principal."}] },
-  { id:83, en:"outcome",     ph:"/ˈaʊtkʌm/",    fr:"résultat / issue", cat:"freq",
-    ex:[{en:"What was the outcome?",fr:"Quel était le résultat?"},
-        {en:"The outcome was positive.",fr:"L'issue était positive."}] },
-  { id:84, en:"purpose",     ph:"/ˈpɜːpəs/",    fr:"but / objectif / raison", cat:"freq",
-    ex:[{en:"What is the purpose of this test?",fr:"Quel est le but de ce test?"},
-        {en:"Explain the purpose clearly.",fr:"Expliquez clairement le but."}] },
-  { id:85, en:"factor",      ph:"/ˈfæktə/",     fr:"facteur", cat:"freq",
-    ex:[{en:"Age is an important factor.",fr:"L'âge est un facteur important."},
-        {en:"Consider all relevant factors.",fr:"Considérez tous les facteurs pertinents."}] },
-  { id:86, en:"process",     ph:"/ˈprəʊses/",   fr:"processus / procédé", cat:"freq",
-    ex:[{en:"The process takes 3 days.",fr:"Le processus prend 3 jours."},
-        {en:"We need to simplify the process.",fr:"Nous devons simplifier le processus."}] },
-  { id:87, en:"evidence",    ph:"/ˈevɪdəns/",   fr:"preuve / données probantes", cat:"freq",
-    ex:[{en:"There is strong evidence.",fr:"Il y a des preuves solides."},
-        {en:"Show me the evidence.",fr:"Montre-moi les preuves."}] },
-  { id:88, en:"challenge",   ph:"/ˈtʃælɪndʒ/",  fr:"défi / difficulté", cat:"freq",
-    ex:[{en:"Speaking English is a challenge.",fr:"Parler anglais est un défi."},
-        {en:"We face many challenges.",fr:"Nous faisons face à de nombreux défis."}] },
-  { id:89, en:"impact",      ph:"/ˈɪmpækt/",    fr:"impact / effet", cat:"freq",
-    ex:[{en:"What is the impact of this?",fr:"Quel est l'impact de cela?"},
-        {en:"The impact was significant.",fr:"L'impact était significatif."}] },
-  { id:90, en:"method",      ph:"/ˈmeθəd/",     fr:"méthode", cat:"freq",
-    ex:[{en:"Which method do you prefer?",fr:"Quelle méthode préfères-tu?"},
-        {en:"We used a standard method.",fr:"Nous avons utilisé une méthode standard."}] },
-  { id:91, en:"limitation",  ph:"/ˌlɪmɪˈteɪʃən/", fr:"limitation / contrainte", cat:"freq",
-    ex:[{en:"There are some limitations.",fr:"Il y a quelques limitations."},
-        {en:"Discuss the limitations of the study.",fr:"Discutez des limites de l'étude."}] },
-  { id:92, en:"assumption",  ph:"/əˈsʌmpʃən/",  fr:"hypothèse / supposition", cat:"freq",
-    ex:[{en:"That's a wrong assumption.",fr:"C'est une hypothèse erronée."},
-        {en:"State your assumptions clearly.",fr:"Énoncez clairement vos hypothèses."}] },
-  { id:93, en:"context",     ph:"/ˈkɒntekst/",  fr:"contexte", cat:"freq",
-    ex:[{en:"In this context, it makes sense.",fr:"Dans ce contexte, c'est logique."},
-        {en:"Give me more context.",fr:"Donne-moi plus de contexte."}] },
-  { id:94, en:"conclusion",  ph:"/kənˈkluːʒən/", fr:"conclusion", cat:"freq",
-    ex:[{en:"What is your conclusion?",fr:"Quelle est ta conclusion?"},
-        {en:"The conclusion is clear.",fr:"La conclusion est claire."}] },
-  { id:95, en:"hypothesis",  ph:"/haɪˈpɒθəsɪs/", fr:"hypothèse", cat:"freq",
-    ex:[{en:"We tested the hypothesis.",fr:"Nous avons testé l'hypothèse."},
-        {en:"State your hypothesis first.",fr:"Énoncez d'abord votre hypothèse."}] },
-  { id:96, en:"summary",     ph:"/ˈsʌməri/",    fr:"résumé / synthèse", cat:"freq",
-    ex:[{en:"Can you give a quick summary?",fr:"Peux-tu faire un rapide résumé?"},
-        {en:"Write a summary of the findings.",fr:"Rédigez un résumé des résultats."}] },
-  { id:97, en:"pattern",     ph:"/ˈpætən/",     fr:"schéma / motif / tendance", cat:"freq",
-    ex:[{en:"I see a pattern in the data.",fr:"Je vois un schéma dans les données."},
-        {en:"The pattern repeats itself.",fr:"Le schéma se répète."}] },
-  { id:98, en:"structure",   ph:"/ˈstrʌktʃə/",  fr:"structure", cat:"freq",
-    ex:[{en:"The structure of the report is clear.",fr:"La structure du rapport est claire."},
-        {en:"What is the bone structure?",fr:"Quelle est la structure osseuse?"}] },
-  { id:99, en:"variable",    ph:"/ˈveəriəbəl/", fr:"variable", cat:"freq",
-    ex:[{en:"Control all the variables.",fr:"Contrôlez toutes les variables."},
-        {en:"The key variable is age.",fr:"La variable clé est l'âge."}] },
-  { id:100, en:"condition",  ph:"/kənˈdɪʃən/",  fr:"condition / état", cat:"freq",
-    ex:[{en:"The condition of the patient improved.",fr:"L'état du patient s'est amélioré."},
-        {en:"Under what conditions?",fr:"Dans quelles conditions?"}] },
-
-  // 📘 PACK 1 — session 4 : connecteurs & expressions
-  { id:101, en:"however",    ph:"/haʊˈevə/",    fr:"cependant / toutefois", cat:"freq",
-    ex:[{en:"However, the results were different.",fr:"Cependant, les résultats étaient différents."},
-        {en:"I agree, however I have doubts.",fr:"Je suis d'accord, toutefois j'ai des doutes."}] },
-  { id:102, en:"therefore",  ph:"/ˈðeəfɔː/",    fr:"donc / par conséquent", cat:"freq",
-    ex:[{en:"Therefore, we need a new plan.",fr:"Par conséquent, nous avons besoin d'un nouveau plan."},
-        {en:"The data is incomplete, therefore unreliable.",fr:"Les données sont incomplètes, donc peu fiables."}] },
-  { id:103, en:"furthermore", ph:"/ˈfɜːðəmɔː/", fr:"de plus / en outre", cat:"freq",
-    ex:[{en:"Furthermore, the cost is too high.",fr:"De plus, le coût est trop élevé."},
-        {en:"Furthermore, we need more staff.",fr:"En outre, nous avons besoin de plus de personnel."}] },
-  { id:104, en:"nevertheless", ph:"/ˌnevəðəˈles/", fr:"néanmoins / malgré tout", cat:"freq",
-    ex:[{en:"Nevertheless, we continued.",fr:"Néanmoins, nous avons continué."},
-        {en:"It was hard; nevertheless, we succeeded.",fr:"C'était difficile; néanmoins, nous avons réussi."}] },
-  { id:105, en:"although",   ph:"/ɔːlˈðəʊ/",    fr:"bien que / même si", cat:"freq",
-    ex:[{en:"Although it was difficult, we managed.",fr:"Bien que ce fût difficile, nous avons réussi."},
-        {en:"Although tired, she kept working.",fr:"Bien que fatiguée, elle a continué à travailler."}] },
-  { id:106, en:"whereas",    ph:"/weəˈræz/",    fr:"alors que / tandis que", cat:"freq",
-    ex:[{en:"Group A improved, whereas Group B didn't.",fr:"Le groupe A s'est amélioré, alors que le groupe B non."}] },
-  { id:107, en:"thus",       ph:"/ðʌs/",        fr:"ainsi / donc", cat:"freq",
-    ex:[{en:"Thus, the hypothesis is confirmed.",fr:"Ainsi, l'hypothèse est confirmée."},
-        {en:"The sample was small, thus less reliable.",fr:"L'échantillon était petit, donc moins fiable."}] },
-  { id:108, en:"regarding",  ph:"/rɪˈɡɑːdɪŋ/",  fr:"concernant / au sujet de", cat:"freq",
-    ex:[{en:"Regarding your question...",fr:"Concernant ta question..."},
-        {en:"I have a comment regarding the data.",fr:"J'ai un commentaire au sujet des données."}] },
-  { id:109, en:"in addition", ph:"/ɪn əˈdɪʃən/", fr:"de plus / en plus", cat:"freq",
-    ex:[{en:"In addition, we tested a second group.",fr:"De plus, nous avons testé un deuxième groupe."}] },
-  { id:110, en:"on the other hand", ph:"", fr:"d'un autre côté / en revanche", cat:"freq",
-    ex:[{en:"On the other hand, the cost is low.",fr:"D'un autre côté, le coût est faible."}] },
-  { id:111, en:"as a result", ph:"/æz ə rɪˈzʌlt/", fr:"par conséquent / en conséquence", cat:"freq",
-    ex:[{en:"As a result, the test failed.",fr:"Par conséquent, le test a échoué."}] },
-  { id:112, en:"in contrast", ph:"/ɪn ˈkɒntrɑːst/", fr:"en revanche / en contraste", cat:"freq",
-    ex:[{en:"In contrast, the second group improved.",fr:"En revanche, le deuxième groupe s'est amélioré."}] },
-  { id:113, en:"for instance", ph:"/fər ˈɪnstəns/", fr:"par exemple", cat:"freq",
-    ex:[{en:"For instance, consider this case.",fr:"Par exemple, considérez ce cas."}] },
-  { id:114, en:"in terms of", ph:"/ɪn tɜːmz əv/", fr:"en termes de / sur le plan de", cat:"freq",
-    ex:[{en:"In terms of speed, it is faster.",fr:"En termes de vitesse, c'est plus rapide."}] },
-  { id:115, en:"as well as",  ph:"/æz wel æz/",  fr:"ainsi que / en plus de", cat:"freq",
-    ex:[{en:"We need time as well as resources.",fr:"Nous avons besoin de temps ainsi que de ressources."}] },
-  { id:116, en:"due to",      ph:"/djuː tuː/",   fr:"en raison de / à cause de", cat:"freq",
-    ex:[{en:"Due to the delay, we stopped.",fr:"En raison du retard, nous avons arrêté."},
-        {en:"Due to rain, the test was postponed.",fr:"À cause de la pluie, le test a été reporté."}] },
-  { id:117, en:"based on",    ph:"/beɪst ɒn/",   fr:"basé sur / d'après", cat:"freq",
-    ex:[{en:"Based on the data, I conclude...",fr:"D'après les données, je conclus..."}] },
-  { id:118, en:"rather than", ph:"/ˈrɑːðə ðæn/", fr:"plutôt que", cat:"freq",
-    ex:[{en:"Use this method rather than that one.",fr:"Utilise cette méthode plutôt que celle-là."}] },
-  { id:119, en:"in order to", ph:"/ɪn ˈɔːdə tuː/", fr:"afin de / pour", cat:"freq",
-    ex:[{en:"In order to improve, practise daily.",fr:"Afin de progresser, pratique quotidiennement."}] },
-  { id:120, en:"regardless of", ph:"/rɪˈɡɑːdlɪs əv/", fr:"indépendamment de / peu importe", cat:"freq",
-    ex:[{en:"Regardless of the result, we continue.",fr:"Peu importe le résultat, nous continuons."}] },
-
-  // 📘 PACK 1 — session 5 : verbes académiques
-  { id:121, en:"assess",     ph:"/əˈses/",      fr:"évaluer / apprécier", cat:"freq",
-    ex:[{en:"We need to assess the risk.",fr:"Nous devons évaluer le risque."},
-        {en:"Assess the patient's condition.",fr:"Évaluez l'état du patient."}] },
-  { id:122, en:"demonstrate", ph:"/ˈdemənstreɪt/", fr:"démontrer / montrer", cat:"freq",
-    ex:[{en:"The results demonstrate a clear trend.",fr:"Les résultats démontrent une tendance claire."},
-        {en:"Can you demonstrate the technique?",fr:"Peux-tu montrer la technique?"}] },
-  { id:123, en:"highlight",  ph:"/ˈhaɪlaɪt/",   fr:"souligner / mettre en évidence", cat:"freq",
-    ex:[{en:"I want to highlight this point.",fr:"Je veux souligner ce point."},
-        {en:"Highlight the key findings.",fr:"Mettez en évidence les résultats clés."}] },
-  { id:124, en:"interpret",  ph:"/ɪnˈtɜːprɪt/", fr:"interpréter", cat:"freq",
-    ex:[{en:"How do you interpret these results?",fr:"Comment interprètes-tu ces résultats?"},
-        {en:"Interpret the graph carefully.",fr:"Interprétez le graphique attentivement."}] },
-  { id:125, en:"investigate", ph:"/ɪnˈvestɪɡeɪt/", fr:"investiguer / étudier", cat:"freq",
-    ex:[{en:"We need to investigate further.",fr:"Nous devons approfondir l'enquête."},
-        {en:"Investigators are studying the case.",fr:"Les enquêteurs étudient le cas."}] },
-  { id:126, en:"validate",   ph:"/ˈvælɪdeɪt/",  fr:"valider", cat:"freq",
-    ex:[{en:"We need to validate the model.",fr:"Nous devons valider le modèle."},
-        {en:"Have you validated the results?",fr:"As-tu validé les résultats?"}] },
-  { id:127, en:"review",     ph:"/rɪˈvjuː/",    fr:"réviser / examiner / passer en revue", cat:"freq",
-    ex:[{en:"Please review the document.",fr:"Veuillez examiner le document."},
-        {en:"We reviewed the literature.",fr:"Nous avons passé la littérature en revue."}] },
-  { id:128, en:"monitor",    ph:"/ˈmɒnɪtə/",    fr:"surveiller / suivre", cat:"freq",
-    ex:[{en:"Monitor the patient's progress.",fr:"Surveillez la progression du patient."},
-        {en:"We monitor the data in real time.",fr:"Nous surveillons les données en temps réel."}] },
-  { id:129, en:"adjust",     ph:"/əˈdʒʌst/",    fr:"ajuster / régler", cat:"freq",
-    ex:[{en:"Adjust the settings if needed.",fr:"Ajuste les paramètres si nécessaire."},
-        {en:"We adjusted the protocol.",fr:"Nous avons ajusté le protocole."}] },
-  { id:130, en:"verify",     ph:"/ˈverɪfaɪ/",   fr:"vérifier / confirmer", cat:"freq",
-    ex:[{en:"Please verify the calculation.",fr:"Veuillez vérifier le calcul."},
-        {en:"Verify that the device is on.",fr:"Vérifiez que l'appareil est allumé."}] },
-  { id:131, en:"report",     ph:"/rɪˈpɔːt/",    fr:"rapporter / signaler", cat:"freq",
-    ex:[{en:"Report any anomaly immediately.",fr:"Signalez toute anomalie immédiatement."},
-        {en:"She reported good results.",fr:"Elle a rapporté de bons résultats."}] },
-  { id:132, en:"present",    ph:"/prɪˈzent/",   fr:"présenter / exposer", cat:"freq",
-    ex:[{en:"I will present the findings tomorrow.",fr:"Je présenterai les résultats demain."},
-        {en:"He presented his work clearly.",fr:"Il a présenté son travail clairement."}] },
-  { id:133, en:"summarise",  ph:"/ˈsʌməraɪz/",  fr:"résumer / synthétiser", cat:"freq",
-    ex:[{en:"Can you summarise the main points?",fr:"Peux-tu résumer les points principaux?"}] },
-  { id:134, en:"contribute",  ph:"/kənˈtrɪbjuːt/", fr:"contribuer", cat:"freq",
-    ex:[{en:"Everyone can contribute ideas.",fr:"Tout le monde peut contribuer des idées."},
-        {en:"This contributes to the field.",fr:"Cela contribue au domaine."}] },
-  { id:135, en:"publish",    ph:"/ˈpʌblɪʃ/",    fr:"publier", cat:"freq",
-    ex:[{en:"We plan to publish the results.",fr:"Nous prévoyons de publier les résultats."},
-        {en:"The paper was published last year.",fr:"L'article a été publié l'année dernière."}] },
-  { id:136, en:"collect",    ph:"/kəˈlekt/",    fr:"collecter / recueillir", cat:"freq",
-    ex:[{en:"We collected data over 3 months.",fr:"Nous avons collecté des données sur 3 mois."},
-        {en:"How was the data collected?",fr:"Comment les données ont-elles été recueillies?"}] },
-  { id:137, en:"record",     ph:"/rɪˈkɔːd/",    fr:"enregistrer / consigner", cat:"freq",
-    ex:[{en:"Record all observations.",fr:"Enregistrez toutes les observations."},
-        {en:"The data was recorded automatically.",fr:"Les données ont été enregistrées automatiquement."}] },
-  { id:138, en:"calculate",  ph:"/ˈkælkjuleɪt/", fr:"calculer", cat:"freq",
-    ex:[{en:"Calculate the average speed.",fr:"Calculez la vitesse moyenne."},
-        {en:"Can you calculate the error margin?",fr:"Peux-tu calculer la marge d'erreur?"}] },
-  { id:139, en:"extract",    ph:"/ɪkˈstrækt/",  fr:"extraire", cat:"freq",
-    ex:[{en:"Extract the relevant information.",fr:"Extraire les informations pertinentes."},
-        {en:"We extracted the data from the file.",fr:"Nous avons extrait les données du fichier."}] },
-  { id:140, en:"test",       ph:"/test/",       fr:"tester / vérifier / tester", cat:"freq",
-    ex:[{en:"Test the hypothesis carefully.",fr:"Testez l'hypothèse attentivement."},
-        {en:"We tested all the subjects.",fr:"Nous avons testé tous les sujets."}] },
-
-  // 📘 PACK 1 — session 6 : vocabulaire de communication
-  { id:141, en:"clarify",    ph:"/ˈklærɪfaɪ/",  fr:"clarifier / préciser", cat:"freq",
-    ex:[{en:"Could you clarify that point?",fr:"Pourriez-vous clarifier ce point?"},
-        {en:"Let me clarify my position.",fr:"Laissez-moi clarifier ma position."}] },
-  { id:142, en:"elaborate",  ph:"/ɪˈlæbəreɪt/", fr:"développer / approfondir", cat:"freq",
-    ex:[{en:"Could you elaborate on that?",fr:"Pourriez-vous développer cela?"},
-        {en:"Please elaborate your answer.",fr:"Veuillez développer votre réponse."}] },
-  { id:143, en:"rephrase",   ph:"/ˌriːˈfreɪz/",  fr:"reformuler", cat:"freq",
-    ex:[{en:"Could you rephrase the question?",fr:"Pourriez-vous reformuler la question?"},
-        {en:"Let me rephrase that.",fr:"Laissez-moi reformuler cela."}] },
-  { id:144, en:"interrupt",  ph:"/ˌɪntəˈrʌpt/",  fr:"interrompre", cat:"freq",
-    ex:[{en:"Sorry to interrupt, but...",fr:"Désolé d'interrompre, mais..."},
-        {en:"Don't interrupt while I'm speaking.",fr:"Ne m'interromps pas quand je parle."}] },
-  { id:145, en:"agree",      ph:"/əˈɡriː/",     fr:"être d'accord / accepter", cat:"freq",
-    ex:[{en:"I agree with your conclusion.",fr:"Je suis d'accord avec ta conclusion."},
-        {en:"Do you agree with this approach?",fr:"Es-tu d'accord avec cette approche?"}] },
-  { id:146, en:"disagree",   ph:"/ˌdɪsəˈɡriː/", fr:"ne pas être d'accord", cat:"freq",
-    ex:[{en:"I respectfully disagree.",fr:"Je ne suis respectueusement pas d'accord."},
-        {en:"We disagree on the method.",fr:"Nous ne sommes pas d'accord sur la méthode."}] },
-  { id:147, en:"point out",  ph:"/pɔɪnt aʊt/",  fr:"signaler / faire remarquer", cat:"freq",
-    ex:[{en:"I'd like to point out an error.",fr:"Je voudrais signaler une erreur."},
-        {en:"She pointed out the key issue.",fr:"Elle a fait remarquer le problème principal."}] },
-  { id:148, en:"bring up",   ph:"/brɪŋ ʌp/",    fr:"soulever / mentionner", cat:"freq",
-    ex:[{en:"I want to bring up a concern.",fr:"Je veux soulever une préoccupation."},
-        {en:"He brought up a good point.",fr:"Il a soulevé un bon point."}] },
-  { id:149, en:"follow up",  ph:"/ˈfɒləʊ ʌp/",  fr:"faire un suivi / revenir sur", cat:"freq",
-    ex:[{en:"I'll follow up by email.",fr:"Je ferai un suivi par e-mail."},
-        {en:"Did you follow up on that issue?",fr:"As-tu fait un suivi sur ce problème?"}] },
-  { id:150, en:"come across", ph:"/kʌm əˈkrɒs/", fr:"tomber sur / sembler", cat:"freq",
-    ex:[{en:"I came across a useful paper.",fr:"Je suis tombé sur un article utile."},
-        {en:"You come across as very confident.",fr:"Tu sembles très confiant."}] },
-  { id:151, en:"look into",  ph:"/lʊk ˈɪntə/",  fr:"examiner / se pencher sur", cat:"freq",
-    ex:[{en:"I'll look into the problem.",fr:"Je vais me pencher sur le problème."},
-        {en:"Can you look into this issue?",fr:"Peux-tu examiner ce problème?"}] },
-  { id:152, en:"make sure",  ph:"/meɪk ʃʊə/",   fr:"s'assurer / vérifier", cat:"freq",
-    ex:[{en:"Make sure the data is saved.",fr:"Assure-toi que les données sont sauvegardées."}] },
-  { id:153, en:"keep in mind", ph:"/kiːp ɪn maɪnd/", fr:"garder à l'esprit", cat:"freq",
-    ex:[{en:"Keep in mind the safety rules.",fr:"Garde à l'esprit les règles de sécurité."}] },
-  { id:154, en:"as soon as possible", ph:"/æz suːn æz ˈpɒsɪbəl/", fr:"dès que possible (ASAP)", cat:"freq",
-    ex:[{en:"Please reply as soon as possible.",fr:"Veuillez répondre dès que possible."}] },
-  { id:155, en:"take into account", ph:"", fr:"prendre en compte / tenir compte de", cat:"freq",
-    ex:[{en:"Take into account the margin of error.",fr:"Tiens compte de la marge d'erreur."}] },
-  { id:156, en:"in my opinion", ph:"/ɪn maɪ əˈpɪnjən/", fr:"à mon avis / selon moi", cat:"freq",
-    ex:[{en:"In my opinion, this needs revision.",fr:"À mon avis, cela nécessite une révision."}] },
-  { id:157, en:"to be honest", ph:"/tuː biː ˈɒnɪst/", fr:"pour être honnête / franchement", cat:"freq",
-    ex:[{en:"To be honest, I didn't understand.",fr:"Pour être honnête, je n'ai pas compris."}] },
-  { id:158, en:"if I'm not mistaken", ph:"", fr:"si je ne me trompe pas", cat:"freq",
-    ex:[{en:"If I'm not mistaken, the deadline is Friday.",fr:"Si je ne me trompe pas, la date limite est vendredi."}] },
-  { id:159, en:"it depends on", ph:"/ɪt dɪˈpendz ɒn/", fr:"cela dépend de", cat:"freq",
-    ex:[{en:"It depends on the results.",fr:"Cela dépend des résultats."}] },
-  { id:160, en:"that being said", ph:"", fr:"cela dit / ceci étant dit", cat:"freq",
-    ex:[{en:"That being said, we can still try.",fr:"Cela dit, nous pouvons toujours essayer."}] },
-
-  // 📘 PACK 1 — session 7 : mots de quantité & mesure
-  { id:161, en:"approximately", ph:"/əˈprɒksɪmətli/", fr:"approximativement / environ", cat:"freq",
-    ex:[{en:"It takes approximately 20 minutes.",fr:"Cela prend approximativement 20 minutes."}] },
-  { id:162, en:"proportion",  ph:"/prəˈpɔːʃən/", fr:"proportion", cat:"freq",
-    ex:[{en:"A large proportion of subjects improved.",fr:"Une grande proportion des sujets s'est améliorée."}] },
-  { id:163, en:"average",    ph:"/ˈævərɪdʒ/",   fr:"moyenne", cat:"freq",
-    ex:[{en:"What is the average result?",fr:"Quel est le résultat moyen?"},
-        {en:"The average age was 35.",fr:"L'âge moyen était de 35 ans."}] },
-  { id:164, en:"range",      ph:"/reɪndʒ/",     fr:"plage / écart / gamme", cat:"freq",
-    ex:[{en:"The range is 10 to 50.",fr:"La plage est de 10 à 50."},
-        {en:"A wide range of methods exist.",fr:"Une large gamme de méthodes existe."}] },
-  { id:165, en:"deviation",  ph:"/ˌdiːviˈeɪʃən/", fr:"déviation / écart", cat:"freq",
-    ex:[{en:"Calculate the standard deviation.",fr:"Calculez l'écart type."},
-        {en:"There is a significant deviation.",fr:"Il y a un écart significatif."}] },
-  { id:166, en:"threshold",  ph:"/ˈθreʃhəʊld/", fr:"seuil", cat:"freq",
-    ex:[{en:"We reached the threshold.",fr:"Nous avons atteint le seuil."},
-        {en:"The pain threshold varies.",fr:"Le seuil de douleur varie."}] },
-  { id:167, en:"increase",   ph:"/ɪnˈkriːs/",   fr:"augmentation / augmenter", cat:"freq",
-    ex:[{en:"There was an increase in speed.",fr:"Il y a eu une augmentation de la vitesse."},
-        {en:"The values increased over time.",fr:"Les valeurs ont augmenté avec le temps."}] },
-  { id:168, en:"decrease",   ph:"/dɪˈkriːs/",   fr:"diminution / diminuer", cat:"freq",
-    ex:[{en:"We observed a decrease in force.",fr:"Nous avons observé une diminution de la force."}] },
-  { id:169, en:"stable",     ph:"/ˈsteɪbəl/",   fr:"stable", cat:"freq",
-    ex:[{en:"The results are stable.",fr:"Les résultats sont stables."},
-        {en:"The patient is now stable.",fr:"Le patient est maintenant stable."}] },
-  { id:170, en:"fluctuate",  ph:"/ˈflʌktʃueɪt/", fr:"fluctuer / varier", cat:"freq",
-    ex:[{en:"The values fluctuate a lot.",fr:"Les valeurs fluctuent beaucoup."},
-        {en:"Temperature can fluctuate daily.",fr:"La température peut fluctuer quotidiennement."}] },
-  { id:171, en:"overall",    ph:"/ˌəʊvərˈɔːl/", fr:"dans l'ensemble / global", cat:"freq",
-    ex:[{en:"Overall, the results are positive.",fr:"Dans l'ensemble, les résultats sont positifs."}] },
-  { id:172, en:"notably",    ph:"/ˈnəʊtəbli/",  fr:"notamment / surtout", cat:"freq",
-    ex:[{en:"Notably, group B showed improvement.",fr:"Notamment, le groupe B a montré une amélioration."}] },
-  { id:173, en:"partly",     ph:"/ˈpɑːtli/",    fr:"en partie / partiellement", cat:"freq",
-    ex:[{en:"This is partly due to fatigue.",fr:"C'est en partie dû à la fatigue."}] },
-  { id:174, en:"entirely",   ph:"/ɪnˈtaɪəli/",  fr:"entièrement / totalement", cat:"freq",
-    ex:[{en:"I entirely agree with you.",fr:"Je suis entièrement d'accord avec toi."},
-        {en:"That's not entirely correct.",fr:"Ce n'est pas entièrement correct."}] },
-  { id:175, en:"merely",     ph:"/ˈmɪəli/",     fr:"simplement / seulement", cat:"freq",
-    ex:[{en:"I merely wanted to help.",fr:"Je voulais simplement aider."},
-        {en:"It's merely a suggestion.",fr:"C'est seulement une suggestion."}] },
-  { id:176, en:"primarily",  ph:"/praɪˈmerɪli/", fr:"principalement / surtout", cat:"freq",
-    ex:[{en:"This is primarily a safety issue.",fr:"C'est principalement un problème de sécurité."}] },
-  { id:177, en:"initially",  ph:"/ɪˈnɪʃəli/",   fr:"initialement / au départ", cat:"freq",
-    ex:[{en:"Initially, the results were poor.",fr:"Au départ, les résultats étaient mauvais."}] },
-  { id:178, en:"subsequently", ph:"/ˈsʌbsɪkwəntli/", fr:"par la suite / ensuite", cat:"freq",
-    ex:[{en:"Subsequently, we revised the protocol.",fr:"Par la suite, nous avons révisé le protocole."}] },
-  { id:179, en:"simultaneously", ph:"/ˌsɪməlˈteɪniəsli/", fr:"simultanément", cat:"freq",
-    ex:[{en:"Both tests were run simultaneously.",fr:"Les deux tests ont été effectués simultanément."}] },
-  { id:180, en:"consistently", ph:"/kənˈsɪstəntli/", fr:"de manière constante / systématiquement", cat:"freq",
-    ex:[{en:"The subject consistently improved.",fr:"Le sujet s'est constamment amélioré."}] },
-
-  // 📘 PACK 1 — session 8 : mots académiques avancés
-  { id:181, en:"correlation", ph:"/ˌkɒrəˈleɪʃən/", fr:"corrélation", cat:"freq",
-    ex:[{en:"There is a strong correlation.",fr:"Il y a une forte corrélation."},
-        {en:"Correlation does not imply causation.",fr:"La corrélation n'implique pas la causalité."}] },
-  { id:182, en:"robust",     ph:"/rəʊˈbʌst/",   fr:"robuste / solide", cat:"freq",
-    ex:[{en:"The method must be robust.",fr:"La méthode doit être robuste."},
-        {en:"We need a robust design.",fr:"Nous avons besoin d'une conception solide."}] },
-  { id:183, en:"novel",      ph:"/ˈnɒvəl/",     fr:"nouveau / original / novateur", cat:"freq",
-    ex:[{en:"This is a novel approach.",fr:"C'est une approche novatrice."},
-        {en:"The findings are novel.",fr:"Les résultats sont originaux."}] },
-  { id:184, en:"feasible",   ph:"/ˈfiːzɪbəl/",  fr:"faisable / réalisable", cat:"freq",
-    ex:[{en:"Is this feasible in 2 weeks?",fr:"Est-ce faisable en 2 semaines?"},
-        {en:"The plan seems feasible.",fr:"Le plan semble réalisable."}] },
-  { id:185, en:"parameter",  ph:"/pəˈræmɪtə/",  fr:"paramètre", cat:"freq",
-    ex:[{en:"Set the parameters carefully.",fr:"Définissez les paramètres attentivement."},
-        {en:"What are the key parameters?",fr:"Quels sont les paramètres clés?"}] },
-  { id:186, en:"criterion",  ph:"/kraɪˈtɪəriən/", fr:"critère (pl: criteria)", cat:"freq",
-    ex:[{en:"What are the inclusion criteria?",fr:"Quels sont les critères d'inclusion?"},
-        {en:"The main criterion is accuracy.",fr:"Le critère principal est la précision."}] },
-  { id:187, en:"benchmark",  ph:"/ˈbentʃmɑːk/", fr:"référence / critère de comparaison", cat:"freq",
-    ex:[{en:"Set a benchmark for comparison.",fr:"Définissez une référence de comparaison."}] },
-  { id:188, en:"outcome",    ph:"/ˈaʊtkʌm/",    fr:"résultat / issue (attendu)", cat:"freq",
-    ex:[{en:"The primary outcome was walking speed.",fr:"Le résultat principal était la vitesse de marche."}] },
-  { id:189, en:"implication", ph:"/ˌɪmplɪˈkeɪʃən/", fr:"implication / conséquence", cat:"freq",
-    ex:[{en:"What are the implications of this?",fr:"Quelles sont les implications de cela?"}] },
-  { id:190, en:"discrepancy", ph:"/dɪˈskrepənsi/", fr:"écart / divergence / incohérence", cat:"freq",
-    ex:[{en:"There is a discrepancy in the data.",fr:"Il y a une incohérence dans les données."},
-        {en:"Explain the discrepancy.",fr:"Expliquez la divergence."}] },
-  { id:191, en:"scope",      ph:"/skəʊp/",      fr:"portée / champ d'application", cat:"freq",
-    ex:[{en:"This is outside the scope of the study.",fr:"Cela dépasse la portée de l'étude."}] },
-  { id:192, en:"rationale",  ph:"/ˌræʃəˈnɑːl/", fr:"justification / raisonnement", cat:"freq",
-    ex:[{en:"What is the rationale for this choice?",fr:"Quelle est la justification de ce choix?"}] },
-  { id:193, en:"bias",       ph:"/ˈbaɪəs/",     fr:"biais", cat:"freq",
-    ex:[{en:"We need to reduce bias.",fr:"Nous devons réduire les biais."},
-        {en:"Selection bias is a common problem.",fr:"Le biais de sélection est un problème courant."}] },
-  { id:194, en:"confound",   ph:"/kənˈfaʊnd/",  fr:"facteur confondant / biaiser", cat:"freq",
-    ex:[{en:"Age may confound the results.",fr:"L'âge peut biaiser les résultats."}] },
-  { id:195, en:"replicate",  ph:"/ˈreplɪkeɪt/", fr:"reproduire / répliquer", cat:"freq",
-    ex:[{en:"Can we replicate these results?",fr:"Pouvons-nous reproduire ces résultats?"},
-        {en:"The study was replicated.",fr:"L'étude a été répliquée."}] },
-  { id:196, en:"peer review", ph:"/pɪə rɪˈvjuː/", fr:"évaluation par les pairs", cat:"freq",
-    ex:[{en:"The paper is under peer review.",fr:"L'article est en cours d'évaluation par les pairs."}] },
-  { id:197, en:"statistically significant", ph:"", fr:"statistiquement significatif", cat:"freq",
-    ex:[{en:"The difference is statistically significant.",fr:"La différence est statistiquement significative."}] },
-  { id:198, en:"reproducible", ph:"/ˌriːprəˈdjuːsɪbəl/", fr:"reproductible", cat:"freq",
-    ex:[{en:"The results must be reproducible.",fr:"Les résultats doivent être reproductibles."}] },
-  { id:199, en:"preliminary", ph:"/prɪˈlɪmɪnəri/", fr:"préliminaire", cat:"freq",
-    ex:[{en:"These are preliminary results.",fr:"Ce sont des résultats préliminaires."},
-        {en:"A preliminary analysis was done.",fr:"Une analyse préliminaire a été effectuée."}] },
-  { id:200, en:"comprehensive", ph:"/ˌkɒmprɪˈhensɪv/", fr:"complet / exhaustif", cat:"freq",
-    ex:[{en:"We need a comprehensive review.",fr:"Nous avons besoin d'une revue exhaustive."},
-        {en:"Give a comprehensive answer.",fr:"Donnez une réponse complète."}] },
-
-  // 📘 PACK 1 — session 9 : prépositions & expressions de temps
-  { id:201, en:"prior to",   ph:"/ˈpraɪər tuː/", fr:"avant / préalablement à", cat:"freq",
-    ex:[{en:"Prior to the test, warm up.",fr:"Avant le test, échauffez-vous."}] },
-  { id:202, en:"following",  ph:"/ˈfɒləʊɪŋ/",   fr:"suite à / après", cat:"freq",
-    ex:[{en:"Following the meeting, send a summary.",fr:"Suite à la réunion, envoie un résumé."}] },
-  { id:203, en:"throughout",  ph:"/θruːˈaʊt/",   fr:"tout au long de / partout dans", cat:"freq",
-    ex:[{en:"Monitor the patient throughout the trial.",fr:"Surveillez le patient tout au long de l'essai."}] },
-  { id:204, en:"within",     ph:"/wɪˈðɪn/",     fr:"dans / en moins de / à l'intérieur de", cat:"freq",
-    ex:[{en:"Reply within 24 hours.",fr:"Répondez dans les 24 heures."},
-        {en:"Stay within the guidelines.",fr:"Restez dans le cadre des directives."}] },
-  { id:205, en:"beyond",     ph:"/bɪˈɒnd/",     fr:"au-delà de", cat:"freq",
-    ex:[{en:"This is beyond my expertise.",fr:"Cela dépasse mon expertise."},
-        {en:"The results went beyond expectations.",fr:"Les résultats ont dépassé les attentes."}] },
-  { id:206, en:"alongside",  ph:"/əˌlɒŋˈsaɪd/", fr:"aux côtés de / en parallèle de", cat:"freq",
-    ex:[{en:"Work alongside your colleagues.",fr:"Travaillez aux côtés de vos collègues."}] },
-  { id:207, en:"in line with", ph:"", fr:"conformément à / en accord avec", cat:"freq",
-    ex:[{en:"The results are in line with expectations.",fr:"Les résultats sont conformes aux attentes."}] },
-  { id:208, en:"subject to",  ph:"/ˈsʌbdʒɪkt tuː/", fr:"sous réserve de / soumis à", cat:"freq",
-    ex:[{en:"This is subject to approval.",fr:"Ceci est soumis à approbation."}] },
-  { id:209, en:"in relation to", ph:"", fr:"par rapport à / en relation avec", cat:"freq",
-    ex:[{en:"In relation to the baseline, values improved.",fr:"Par rapport à la référence, les valeurs se sont améliorées."}] },
-  { id:210, en:"with respect to", ph:"", fr:"par rapport à / en ce qui concerne", cat:"freq",
-    ex:[{en:"With respect to balance, she improved.",fr:"En ce qui concerne l'équilibre, elle s'est améliorée."}] },
-
-  // 📘 PACK 1 — session 10 : mots pour parler de soi / progresser
-  { id:211, en:"confident",  ph:"/ˈkɒnfɪdənt/", fr:"confiant / sûr de soi", cat:"freq",
-    ex:[{en:"I feel more confident now.",fr:"Je me sens plus confiant maintenant."},
-        {en:"Try to sound confident.",fr:"Essaie de paraître confiant."}] },
-  { id:212, en:"fluent",     ph:"/ˈfluːənt/",   fr:"courant / fluide", cat:"freq",
-    ex:[{en:"I want to be fluent in English.",fr:"Je veux parler anglais couramment."},
-        {en:"She speaks fluent French.",fr:"Elle parle français couramment."}] },
-  { id:213, en:"hesitate",   ph:"/ˈhezɪteɪt/",  fr:"hésiter", cat:"freq",
-    ex:[{en:"Don't hesitate to ask questions.",fr:"N'hésite pas à poser des questions."},
-        {en:"I hesitate when I speak.",fr:"J'hésite quand je parle."}] },
-  { id:214, en:"mistake",    ph:"/mɪˈsteɪk/",   fr:"erreur / faute", cat:"freq",
-    ex:[{en:"Everyone makes mistakes.",fr:"Tout le monde fait des erreurs."},
-        {en:"Learn from your mistakes.",fr:"Apprends de tes erreurs."}] },
-  { id:215, en:"progress",   ph:"/ˈprəʊɡres/",  fr:"progrès / progresser", cat:"freq",
-    ex:[{en:"I'm making progress every day.",fr:"Je fais des progrès chaque jour."},
-        {en:"Your progress is impressive.",fr:"Tes progrès sont impressionnants."}] },
-  { id:216, en:"practice",   ph:"/ˈpræktɪs/",   fr:"pratique / s'entraîner", cat:"freq",
-    ex:[{en:"Practice every day.",fr:"Pratique tous les jours."},
-        {en:"Practice makes perfect.",fr:"C'est en forgeant qu'on devient forgeron."}] },
-  { id:217, en:"struggle",   ph:"/ˈstrʌɡəl/",   fr:"lutter / avoir du mal", cat:"freq",
-    ex:[{en:"I struggle with vocabulary.",fr:"J'ai du mal avec le vocabulaire."},
-        {en:"It's normal to struggle at first.",fr:"C'est normal d'avoir du mal au début."}] },
-  { id:218, en:"native speaker", ph:"/ˈneɪtɪv ˈspiːkə/", fr:"locuteur natif", cat:"freq",
-    ex:[{en:"My colleague is a native speaker.",fr:"Mon collègue est locuteur natif."},
-        {en:"Native speakers speak very fast.",fr:"Les locuteurs natifs parlent très vite."}] },
-  { id:219, en:"pronunciation", ph:"/prəˌnʌnsiˈeɪʃən/", fr:"prononciation", cat:"freq",
-    ex:[{en:"My pronunciation needs work.",fr:"Ma prononciation a besoin d'être travaillée."},
-        {en:"Focus on pronunciation first.",fr:"Concentre-toi d'abord sur la prononciation."}] },
-  { id:220, en:"vocabulary",  ph:"/vəˈkæbjʊləri/", fr:"vocabulaire", cat:"freq",
-    ex:[{en:"Building vocabulary takes time.",fr:"Construire un vocabulaire prend du temps."},
-        {en:"My vocabulary is improving.",fr:"Mon vocabulaire s'améliore."}] },
-];
+let VOCAB = [];
 
 // ═══════════════════════════════════════
 //  STATE
@@ -1326,6 +707,47 @@ let session = { cards: [], index: 0, flipped: false, easy: 0, hard: 0 };
 let currentCat = 'all';
 
 function save() { localStorage.setItem('englishlab', JSON.stringify(state)); }
+
+// ═══════════════════════════════════════
+//  LOADER — fetch vocabulary.json
+// ═══════════════════════════════════════
+function showLoader(msg) {
+  document.getElementById('page-home').innerHTML = `
+    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;gap:16px;">
+      <div style="font-size:48px;">📖</div>
+      <div style="font-size:16px;font-weight:600;">${msg}</div>
+      <div style="width:200px;height:4px;background:var(--surface2);border-radius:99px;overflow:hidden;">
+        <div style="height:100%;width:60%;background:linear-gradient(90deg,var(--teal),var(--green));border-radius:99px;animation:pulse 1s ease-in-out infinite alternate;"></div>
+      </div>
+    </div>
+    <style>@keyframes pulse{from{opacity:.4}to{opacity:1}}</style>`;
+}
+
+async function loadVocabulary() {
+  showLoader('Chargement du vocabulaire...');
+  try {
+    const res = await fetch('vocabulary.json?v=' + Date.now());
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    VOCAB = await res.json();
+    console.log('✅ Vocabulaire chargé :', VOCAB.length, 'mots');
+    initApp();
+  } catch(e) {
+    console.warn('⚠️ vocabulary.json non trouvé, utilisation du cache local');
+    const cached = localStorage.getItem('englishlab_vocab');
+    if (cached) {
+      VOCAB = JSON.parse(cached);
+      console.log('📦 Cache utilisé :', VOCAB.length, 'mots');
+      initApp();
+    } else {
+      document.getElementById('page-home').innerHTML = `
+        <div style="text-align:center;padding:40px 20px;">
+          <div style="font-size:48px;margin-bottom:16px;">⚠️</div>
+          <div style="font-size:16px;font-weight:600;margin-bottom:8px;">Fichier vocabulary.json introuvable</div>
+          <div style="font-size:13px;color:var(--text2);">Place le fichier vocabulary.json dans le même dossier que index.html</div>
+        </div>`;
+    }
+  }
+}
 
 // ═══════════════════════════════════════
 //  STREAK
@@ -1359,16 +781,33 @@ function showPage(id) {
 function updateHome() {
   const mastered = VOCAB.filter(v => (state.scores[v.id] || 0) >= 3).length;
   const due = VOCAB.filter(v => (state.scores[v.id] || 0) < 3).length;
-  document.getElementById('stat-total').textContent = Object.keys(state.scores).length;
-  document.getElementById('stat-due').textContent = due;
-  document.getElementById('stat-mastered').textContent = mastered;
-  document.getElementById('globalProgress').style.width = Math.round(mastered / VOCAB.length * 100) + '%';
+  const seen = Object.keys(state.scores).length;
+  const el = id => document.getElementById(id);
+  if (el('stat-total')) el('stat-total').textContent = seen;
+  if (el('stat-due'))   el('stat-due').textContent   = due;
+  if (el('stat-mastered')) el('stat-mastered').textContent = mastered;
+  if (el('globalProgress')) el('globalProgress').style.width = Math.round(mastered / Math.max(VOCAB.length,1) * 100) + '%';
 
-  ['freq','lab','daily','phrases','biomech'].forEach(c => {
-    const total = VOCAB.filter(v => v.cat === c).length;
-    const done  = VOCAB.filter(v => v.cat === c && (state.scores[v.id]||0) >= 3).length;
-    document.getElementById('cat-' + c + '-count').textContent = done + ' / ' + total + ' maîtrisés';
-  });
+  // Build category grid dynamically from vocab
+  const cats = {};
+  VOCAB.forEach(v => { if (!cats[v.cat]) cats[v.cat] = []; cats[v.cat].push(v); });
+  const icons = { freq:'📘', lab:'🔬', daily:'💬', phrases:'🗣️', biomech:'🦴' };
+  const labels = { freq:'Mots fréquents', lab:'Laboratoire', daily:'Quotidien', phrases:'Phrases clés', biomech:'Biomécanique' };
+
+  const grid = el('cat-grid');
+  if (grid) {
+    grid.innerHTML = Object.entries(cats).map(([cat, words]) => {
+      const total = words.length;
+      const done  = words.filter(v => (state.scores[v.id]||0) >= 3).length;
+      const icon  = icons[cat]  || '📁';
+      const label = labels[cat] || cat;
+      return `<div class="stat-card" style="cursor:pointer;" onclick="startCategory('${cat}')">
+        <div style="font-size:24px;margin-bottom:6px;">${icon}</div>
+        <div style="font-weight:600;font-size:14px;">${label}</div>
+        <div class="stat-label">${done} / ${total} maîtrisés</div>
+      </div>`;
+    }).join('');
+  }
 }
 updateHome();
 
@@ -1520,11 +959,6 @@ function toggleSetting(key) {
   el.classList.toggle('on', state.settings[key]);
   save();
 }
-// Init toggles
-Object.keys(state.settings).forEach(k => {
-  const el = document.getElementById('toggle-' + k);
-  if (el) el.classList.toggle('on', state.settings[k]);
-});
 
 function resetProgress() {
   if (confirm('Réinitialiser toute la progression?')) {
@@ -1539,11 +973,48 @@ function resetProgress() {
 }
 
 // ═══════════════════════════════════════
+//  INIT APP (après chargement du JSON)
+// ═══════════════════════════════════════
+function initApp() {
+  // Mise en cache locale du vocabulaire
+  localStorage.setItem('englishlab_vocab', JSON.stringify(VOCAB));
+
+  // Streak
+  checkStreak();
+  document.getElementById('streakCount').textContent = state.streak;
+
+  // Rebuild home page
+  document.getElementById('page-home').innerHTML = `
+    <div class="stats-row" style="margin-top:20px;">
+      <div class="stat-card"><div class="stat-num" id="stat-total">0</div><div class="stat-label">Mots vus</div></div>
+      <div class="stat-card"><div class="stat-num" id="stat-due">0</div><div class="stat-label">À réviser</div></div>
+      <div class="stat-card"><div class="stat-num" id="stat-mastered">0</div><div class="stat-label">Maîtrisés</div></div>
+    </div>
+    <div class="section-title">Progression globale</div>
+    <div class="progress-bar"><div class="progress-fill" id="globalProgress" style="width:0%"></div></div>
+    <div class="section-title">Catégories (${VOCAB.length} mots au total)</div>
+    <div id="cat-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px;"></div>
+    <button class="btn-primary" onclick="startDueSession()">Commencer la révision du jour 🚀</button>`;
+
+  updateHome();
+  renderVocab('all');
+
+  // Init toggles
+  Object.keys(state.settings).forEach(k => {
+    const el = document.getElementById('toggle-' + k);
+    if (el) el.classList.toggle('on', state.settings[k]);
+  });
+}
+
+// ═══════════════════════════════════════
 //  SERVICE WORKER REGISTRATION
 // ═══════════════════════════════════════
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js').catch(e => console.log('SW:', e));
 }
+
+// 🚀 DÉMARRAGE
+loadVocabulary();
 </script>
 </body>
 </html>

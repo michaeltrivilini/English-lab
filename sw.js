@@ -1,7 +1,8 @@
-const CACHE = 'english-lab-v1';
+const CACHE = 'english-lab-v2';
 const ASSETS = [
   '/index.html',
-  '/manifest.json'
+  '/manifest.json',
+  '/vocabulary.json'
 ];
 
 self.addEventListener('install', e => {
